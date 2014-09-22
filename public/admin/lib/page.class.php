@@ -764,7 +764,7 @@
 							$btn[]="<input type=\"button\" name=\"azione\" class=\"hexfield\" style=\"width:130px;margin-right:5px;margin-left:5px;\" value=\"Seleziona Status\" onclick=\"javascript:selectAll(this,'status');\">";
 							$btn[]="<input type=\"button\" name=\"azione\" class=\"hexfield\" style=\"width:130px;margin-right:5px;margin-left:5px;\" value=\"Seleziona RefMap\" onclick=\"javascript:selectAll(this,'refmap');\">";
 							break;
-						case "vista_qt_selgroup":
+						case "vista_selgroup":
 							$filtro="project_id=".$this->parametri["project"];
 							$btn[]="<input type=\"submit\" name=\"azione\" class=\"hexfield\" style=\"margin-right:5px;margin-left:5px;\" value=\"Annulla\">";
 							$btn[]="<input type=\"submit\" name=\"azione\" class=\"hexfield\" style=\"margin-right:5px;margin-left:5px;\" value=\"Salva\">";
@@ -1018,7 +1018,7 @@
 					$btn  = "\n\t<div id=\"footerButton\">";
 					$btn .= "<input type=\"button\" class=\"hexfield\" value=\"".GCAuthor::t('button_back')."\" onclick=\"javascript:navigate([$keys],[$values])\">";
 					if($this->initI18n()) {
-						$btn .= "<input type=\"button\" class=\"hexfield\" id=\"i18n\" value=\"Traduzioni\">";
+						$btn .= "<input type=\"button\" class=\"hexfield\" id=\"i18n\" value=\"".GCAuthor::t('translations')."\">";
 					}
 					$btn .= "</div>";
 					echo $btn;

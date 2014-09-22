@@ -22,6 +22,9 @@
                         <?php
                         if(!empty($p->parametri['project'])) {
                             echo '<a class="button" data-action="mapfiles_manager">'.GCAuthor::t('online_maps').'</a>';
+                            if(defined('MAPPROXY') && MAPPROXY) {
+                                echo ' <a class="button" data-action="cache_manager">Cache</a>';
+                            }
                         }
                         ?>
 						<?php } else { ?>
@@ -77,7 +80,21 @@
 				</table>
 				<?php } ?>
 			</div>
+            <div id="cache_manager" style="display:none;">
+                <?php if(!empty($p->parametri['project']) && defined('MAPPROXY') && MAPPROXY) { ?>
+				<table border="1" cellpadding="3" class="stiletabella">
+				<tr role="header" class="ui-widget ui-state-default">
+					<th>Cache</th>
+					<th><?php echo GCauthor::t('empty') ?>:</th>
+				</tr>
+                </table>
+                <?php } ?>
+            </div>
+
 			<div id="mapfiles_manager" style="display:none;" data-title="<?php echo GCAuthor::t('online_maps') ?>">
+                <?php if(!empty($p->parametri['project'])) { ?>
+                <!--<a href="#" data-action="refresh" data-projectmap="1" data-target="tmp" data-project="<?= $p->parametri['project'] ?>"><?= GCAuthor::t('update') ?></a>TMP | <a href="#" data-action="refresh" data-projectmap="1" data-target="public" data-project="<?= $p->parametri['project'] ?>"><?= GCAuthor::t('update') ?></a>PUBLIC<br>-->
+                
 				<table border="1" cellpadding="3" class="stiletabella">
 				<tr class="ui-widget ui-state-default">
 					<th>Mapset</th>
@@ -85,8 +102,21 @@
 					<th><?php echo GCAuthor::t('temporary') ?></th>
 					<th><?php echo GCAuthor::t('public') ?></th>
 				</tr>
-				<tr><td><b><?php echo GCAuthor::t('all') ?></b></td><td></td><td style="text-align:center;"><a href="#" data-action="refresh" data-target="tmp" data-mapset=""><?php echo GCAuthor::t('update') ?></a></td><td style="text-align:center;"><a href="#" data-action="refresh" data-target="public" data-mapset=""><?php echo GCAuthor::t('update'); ?></a></td></tr>
-				<?php
+
+				<?php if(defined('PROJECT_MAPFILE') && PROJECT_MAPFILE){?>
+				<tr><td><b><?php echo GCAuthor::t('project') ?></b></td><td></td><td style="text-align:center;"><a href="#" data-action="refresh" data-projectmap="1" data-target="tmp" data-project="<?= $p->parametri['project'] ?>"><?php echo GCAuthor::t('update') ?></a></td><td style="text-align:center;"><a href="#" data-action="refresh" data-projectmap="1" data-target="public" data-project="<?= $p->parametri['project'] ?>"><?php echo GCAuthor::t('update'); ?></a></td></tr>
+                <?php 
+				if(isset($mapsets)) {
+					foreach($mapsets as $mapset) {
+						echo '<tr>
+							<td>'.$mapset['mapset_title'].' ('.$mapset['mapset_name'].')</td>
+							<td></td>
+							<td style="text-align:center;"><a data-action="view_map" href="'.$mapset['url'].'&tmp=1" target="_blank">Map</a></td>
+							<td style="text-align:center;"><a data-action="view_map" href="'.$mapset['url'].'" target="_blank">Map</a></td>
+						</tr>';
+					}
+				}
+                }else{ 
 				if(isset($mapsets)) {
 					foreach($mapsets as $mapset) {
 						echo '<tr>
@@ -98,8 +128,13 @@
 					}
 				}
 				?>
+				<tr></tr>
+				<tr><td><b><?php echo GCAuthor::t('all') ?></b></td><td></td><td style="text-align:center;"><a href="#" data-action="refresh" data-target="tmp" data-mapset=""><?php echo GCAuthor::t('update') ?></a></td><td style="text-align:center;"><a href="#" data-action="refresh" data-target="public" data-mapset=""><?php echo GCAuthor::t('update'); ?></a></td></tr>
 				</table>
+                
+                <?php }} ?>
 			</div>
+
 			<div id="import_dialog" style="display:none;">
 				<div id="import_dialog_tabs">
 					<ul>
@@ -107,7 +142,7 @@
 						<li><a href="#import_dialog_raster">Raster</a></li>
 						<li><a href="#import_dialog_postgis">PostgreSQL</a></li>
 						<li><a href="#import_dialog_xls">XLS</a></li>
-						<!--<li><a href="#import_dialog_csv">CSV</a></li>-->
+						<li><a href="#import_dialog_csv">CSV</a></li>
 					</ul>
 					<div id="import_dialog_shp">
 						<input id="shp_file_upload" name="file_upload" type="file" />

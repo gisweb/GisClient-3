@@ -8,6 +8,11 @@ $mapConfig = json_decode($_REQUEST['options'], true);
 //file_put_contents('debug.txt', var_export($mapConfig, true));
 
 $oMap=ms_newMapObj('');
+/* $color = new colorObj();
+$color->r = 255;
+$color->g = 255;
+$color->b = 255;
+$oMap->set('imagecolor', $color); */
 if(defined('PROJ_LIB')) $oMap->setConfigOption("PROJ_LIB", PROJ_LIB); 
 $oMap->setSize(intval($mapConfig['size'][0]), intval($mapConfig['size'][1]));
 $oMap->setProjection("init=".strtolower($mapConfig['srs']));
@@ -72,6 +77,7 @@ foreach($mapConfig['layers'] as $key => $layer) {
 		if(!empty($layer['PARAMETERS']['SLD'])) {
 			$oLay->setMetaData('wms_sld_url', $layer['PARAMETERS']['SLD']);
 		}
+        if($mapConfig['srs'] == 'EPSG:900913') $mapConfig['srs'] = 'EPSG:3857';
 		$oLay->setMetaData("wms_srs", $mapConfig['srs']);
 		$oLay->setMetaData("wms_name", $layerNames);
 		$oLay->setMetaData("wms_server_version", $layer['PARAMETERS']['VERSION']);

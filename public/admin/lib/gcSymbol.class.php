@@ -24,18 +24,20 @@ class Symbol{
 	
 	function __construct($table){
 		$this->table=$table;
-		$this->db = new sql_db(DB_HOST.":".DB_PORT,DB_USER,DB_PWD,DB_NAME, false);
-		if(!$this->db->db_connect_id) die( "Impossibile connettersi al database ". DB_NAME);
+        $this->db = GCApp::getDB();
 	}
 
 	function createIcon(){
 		$dbSchema=DB_SCHEMA;
-		$this->mapfile=ROOT_PATH.'map/tmp.map';
+        if(!is_dir(ROOT_PATH.'tmp')) mkdir(ROOT_PATH.'tmp');
+		$this->mapfile=ROOT_PATH.'map/tmp/tmp.map';
 		$this->symbolSize=array(LEGEND_POINT_SIZE,LEGEND_LINE_WIDTH,LEGEND_POLYGON_WIDTH);
 		$aClass=array();
 		
 		
 		if($this->table=='class'){
+            $aSymbol=array("SYMBOL\nNAME \"___LETTER___\"\nTYPE TRUETYPE\nFONT \"verdana\"\nCHARACTER \"a\"\nANTIALIAS TRUE\nEND");//lettera A per le icone dei testi
+            
 			$sql="select class.class_id,layertype_ms,style_id,color,outlinecolor,bgcolor,angle,size,width,symbol.*
 			from $dbSchema.class inner join $dbSchema.layer using(layer_id) inner join $dbSchema.layergroup using (layergroup_id) 
 			inner join $dbSchema.theme using (theme_id) inner join $dbSchema.project using (project_name) 
@@ -44,33 +46,32 @@ class Symbol{
 
 			if($this->filter) $sql.=" where ".$this->filter;
 			$sql.=" order by style_order;";
-			$this->db->sql_query($sql);
-			$res=$this->db->sql_fetchrowset();	
-			$aSymbol=array("SYMBOL\nNAME \"___LETTER___\"\nTYPE TRUETYPE\nFONT \"verdana\"\nCHARACTER \"a\"\nANTIALIAS TRUE\nEND");//lettera A per le icone dei testi
-
-			for($i=0;$i<count($res);$i++){
-				$aClass[$res[$i]["class_id"]]["icontype"]=$res[$i]["layertype_ms"];
-				if($res[$i]["style_id"]){
-					$aStyle["color"]=explode(" ",$res[$i]["color"]);
-					$aStyle["outlinecolor"]=explode(" ",$res[$i]["outlinecolor"]);
-					$aStyle["bgcolor"]=explode(" ",$res[$i]["bgcolor"]);
-					$aStyle["angle"]=$res[$i]["angle"];	
-					$aStyle["width"]=$res[$i]["width"];	
-					$aStyle["size"]=$res[$i]["size"];			
-					$aStyle["symbol"]=$res[$i]["symbol_name"];	
-					$aClass[$res[$i]["class_id"]]["style"][]=$aStyle;				
+            
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute();
+            while($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+				$aClass[$row["class_id"]]["icontype"]=$row["layertype_ms"];
+				if($row["style_id"]){
+					$aStyle["color"]=explode(" ",$row["color"]);
+					$aStyle["outlinecolor"]=explode(" ",$row["outlinecolor"]);
+					$aStyle["bgcolor"]=explode(" ",$row["bgcolor"]);
+					$aStyle["angle"]=$row["angle"];	
+					$aStyle["width"]=$row["width"];	
+					$aStyle["size"]=$row["size"];			
+					$aStyle["symbol"]=$row["symbol_name"];	
+					$aClass[$row["class_id"]]["style"][]=$aStyle;				
 				}
-				if($res[$i]["symbol_name"]){
+				if($row["symbol_name"]){
 					$smbText=array();
 					$smbText[]="SYMBOL";
-					$smbText[]="\tNAME \"".$res[$i]["symbol_name"]."\"";
-					if($res[$i]["symbol_type"])$smbText[]="\tTYPE ".$res[$i]["symbol_type"];
-					if($res[$i]["font_name"]) $smbText[]="\tFONT \"".$res[$i]["font_name"]."\"";
-					if($res[$i]["ascii_code"]) $smbText[]=($res[$i]["ascii_code"]==34)?"\tCHARACTER '".chr($res[$i]["ascii_code"])."'":"\tCHARACTER \"".($res[$i]["ascii_code"]==92?chr(92):'').chr($res[$i]["ascii_code"])."\"";
-					if($res[$i]["filled"]) $smbText[]="\tFILLED TRUE";
-					if($res[$i]["points"]) $smbText[]="\tPOINTS ".$res[$i]["points"]." END";
-					if($res[$i]["image"]) $smbText[]="\tIMAGE \"".$res[$i]["image"]."\"";
-					if($res[$i]["symbol_def"]) $smbText[]=$res[$i]["symbol_def"];
+					$smbText[]="\tNAME \"".$row["symbol_name"]."\"";
+					if($row["symbol_type"])$smbText[]="\tTYPE ".$row["symbol_type"];
+					if($row["font_name"]) $smbText[]="\tFONT \"".$row["font_name"]."\"";
+					if($row["ascii_code"]) $smbText[]=($row["ascii_code"]==34)?"\tCHARACTER '".chr($row["ascii_code"])."'":"\tCHARACTER \"".($row["ascii_code"]==92?chr(92):'').chr($row["ascii_code"])."\"";
+					if($row["filled"]) $smbText[]="\tFILLED TRUE";
+					if($row["points"]) $smbText[]="\tPOINTS ".$row["points"]." END";
+					if($row["image"]) $smbText[]="\tIMAGE \"".ROOT_PATH.'map/'.$row["image"]."\"";
+					if($row["symbol_def"]) $smbText[]=$row["symbol_def"];
 					$smbText[]="END";
 					if(!in_array($smbText,$aSymbol)) $aSymbol[]=implode("\n",$smbText);				
 				}		
@@ -83,65 +84,65 @@ class Symbol{
 				$oIcon = $this->_iconFromClass($class);
 				if($oIcon){
 					ob_start();
-					$oIcon->saveImage('');
-					$image_data =pg_escape_bytea(ob_get_contents());
+					$oIcon->saveImage();
+					$image_data = ob_get_contents();
 					ob_end_clean();
-					$sql="update $dbSchema.class set class_image='{$image_data}' where class_id=$classId;";
-					//echo ($sql."<br>");
-					$this->db->sql_query($sql);
 				}
 			}
+            
 		}
 
 		elseif($this->table=='symbol'){
 			$sql="select symbol.* from $dbSchema.symbol inner join $dbSchema.e_symbolcategory using (symbolcategory_id)";
 			if($this->filter) $sql.=" where ".$this->filter;
 			$sql.=" LIMIT 200;";
-			$this->db->sql_query($sql);
-			$res=$this->db->sql_fetchrowset();	
-
-			for($i=0;$i<count($res);$i++){
-			    $aClass[$res[$i]["symbol_name"]]["icontype"]=$res[$i]["icontype"];
+            
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute();
+            while($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+			    $aClass[$row["symbol_name"]]["icontype"]=$row["icontype"];
 				$aStyle=array();
-				$aStyle["symbol"]=$res[$i]["symbol_name"];
+				$aStyle["symbol"]=$row["symbol_name"];
 				$aStyle["color"]=array(0,0,0);
-				$aStyle["size"]=$this->symbolSize[$res[$i]["icontype"]];
-				$aClass[$res[$i]["symbol_name"]]["style"][]=$aStyle;	
+				$aStyle["size"]=$this->symbolSize[$row["icontype"]];
+				$aClass[$row["symbol_name"]]["style"][]=$aStyle;	
 				$smbText=array();
 				$smbText[]="SYMBOL";
-				$smbText[]="\tNAME \"".$res[$i]["symbol_name"]."\"";
-				if($res[$i]["symbol_type"])$smbText[]="\tTYPE ".$res[$i]["symbol_type"];
-				if($res[$i]["font_name"]) $smbText[]="\tFONT \"".$res[$i]["font_name"]."\"";
-				if($res[$i]["ascii_code"]) $smbText[]=($res[$i]["ascii_code"]==34)?"\tCHARACTER '".chr($res[$i]["ascii_code"])."'":"\tCHARACTER \"".($res[$i]["ascii_code"]==92?chr(92):'').chr($res[$i]["ascii_code"])."\"";
-				if($res[$i]["filled"]) $smbText[]="\tFILLED TRUE";
-				if($res[$i]["points"]) $smbText[]="\tPOINTS ".$res[$i]["points"]." END";
-				if($res[$i]["image"]) $smbText[]="\tIMAGE \"".$res[$i]["image"]."\"";
-				if($res[$i]["symbol_def"]) $smbText[]=$res[$i]["symbol_def"];
+				$smbText[]="\tNAME \"".$row["symbol_name"]."\"";
+				if($row["symbol_type"])$smbText[]="\tTYPE ".$row["symbol_type"];
+				if($row["font_name"]) $smbText[]="\tFONT \"".$row["font_name"]."\"";
+				if($row["ascii_code"]) $smbText[]=($row["ascii_code"]==34)?"\tCHARACTER '".chr($row["ascii_code"])."'":"\tCHARACTER \"".($row["ascii_code"]==92?chr(92):'').chr($row["ascii_code"])."\"";
+				if($row["filled"]) $smbText[]="\tFILLED TRUE";
+				if($row["points"]) $smbText[]="\tPOINTS ".$row["points"]." END";
+				if($row["image"]) $smbText[]="\tIMAGE \"".ROOT_PATH.'map/'.$row["image"]."\"";
+				if($row["symbol_def"]) $smbText[]=$row["symbol_def"];
 				$smbText[]="END";
 				
 				$aSymbol[]=implode("\n",$smbText);		
 
 			}
+
 			$this->_createMapFile($aSymbol);
-    
 			foreach($aClass as $symbolName=>$class){
 			
 				$oIcon = $this->_iconFromClass($class);
 				
 				if($oIcon){
 					ob_start();
-					$oIcon->saveImage('');
-					$image_data =pg_escape_bytea(ob_get_contents());
+					$oIcon->saveImage();
+					$image_data = ob_get_contents();
 					ob_end_clean();
-					$sql="update $dbSchema.symbol set symbol_image='{$image_data}' where symbol_name='$symbolName';";
+					//$sql="update $dbSchema.symbol set symbol_image='{$image_data}' where symbol_name='$symbolName';";
 					//echo ($sql."<br>");
-					$this->db->sql_query($sql);
+					//$this->db->sql_query($sql);
 				}
 			}
-			
 		}
 
-		//if(!DEBUG) unlink($this->mapfile);	
+        //questo è un mezzo accrocchio... ma non ho capito dove altro serve sta cosa...
+        //quando viene renderizzata l'immaginetta preview della classe nell'author, abbiamo sempre una sola classe da visualizzare e bisogna ritornarla a chi chiama questa funzione
+        //negli altri casi boh?
+        if($this->filter) return $image_data;
 	}
 	
 
@@ -156,7 +157,8 @@ class Symbol{
 		$oLay=ms_newLayerObj($oMap);
 		$oLay->set('type', $class["icontype"]);	
 		$oClass=ms_newClassObj($oLay);
-		$smbSize=$this->symbolSize[$class["icontype"]];
+		if($this->symbolSize[$class["icontype"]])
+			$smbSize=$this->symbolSize[$class["icontype"]];
 		$style=isset($class["style"])?$class["style"]:array();
 		//print_array($class);
 		//Aggiungo gli stili
@@ -174,8 +176,9 @@ class Symbol{
 			
 
 		}
-
-		$icoImg = @$oClass->createLegendIcon(LEGEND_ICON_W,LEGEND_ICON_H);
+        
+//$oMap->save(ROOT_PATH.'config/debug/debug.map');
+		$icoImg = $oClass->createLegendIcon(LEGEND_ICON_W,LEGEND_ICON_H);
 		return $icoImg;
 	}
 	
@@ -208,7 +211,7 @@ class Symbol{
 	}
 	
 	//RESTITUISCE UN ELENCO DI SIMBOLI FILTRATI
-	function getList(){
+	function getList($assoc = false){
 		$dbSchema=DB_SCHEMA;
 		$table=$this->table;
         $values=array();
@@ -220,20 +223,31 @@ class Symbol{
 			$sql.="  order by 1,2,3,4,5";
 			$headers = array("Image","Class","Layer","Layergroup","Theme","Project");	
 			$values=array();
-			$this->db->sql_query($sql);
-			while($row=$this->db->sql_fetchrow()){
-				$values[]=array("table=class&id=".$row["class_id"],$row["class"],$row["layer"],$row["layergroup"],$row["theme"],$row["project"]);
+            
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute();
+            while($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+				if(!$assoc) {
+					$values[]=array("table=class&id=".$row["class_id"],$row["class"],$row["layer"],$row["layergroup"],$row["theme"],$row["project"]);
+				} else {
+					array_push($values, $row);
+				}
 			}
 		}
 		elseif($table=='symbol'){
 			$sql="select symbol_name as symbol,symbolcategory_name as category from $dbSchema.symbol inner join $dbSchema.e_symbolcategory using (symbolcategory_id)";
 			
 			if($this->filter) $sql.=" where ".$this->filter;
-			$sql.="  order by 1";
+			$sql.="  order by symbolcategory_name, symbol_name";
 			$headers = array("Image","Symbol","Category");
-			$this->db->sql_query($sql);
-			while($row=$this->db->sql_fetchrow()){
-				$values[]=array("table=symbol&id=".$row["symbol"],$row["symbol"],$row["category"]);
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute();
+            while($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+				if(!$assoc) {
+					$values[]=array("table=symbol&id=".$row["symbol"],$row["symbol"],$row["category"]);
+				} else {
+					array_push($values, $row);
+				}
 			}
 		}
 
@@ -289,7 +303,7 @@ class Symbol{
 		$tableId=$table."_id";
 		foreach($aSymbol as $smbName=>$smbDef){
 			$sql="insert into $dbSchema.symbol(symbol_id,symbol_name,def) values ((select $dbSchema.new_pkey('symbol','symbol_id')),'$smbName','$smbDef');";
-			$this->db->sql_query($sql);
+            $this->db->exec($sql);
 			print($sql."\n");
 		}
 	}
@@ -297,13 +311,15 @@ class Symbol{
 	function updateFontList(){
 		$dbSchema=DB_SCHEMA;
 		$sql="select font_name,file from $dbSchema.font;";
-		$this->db->sql_query($sql);
-		$file = fopen (ROOT_PATH.'fonts/fonts.list',"w");
-		while($row=$this->db->sql_fetchrow())
+        $stmt = $this->db->prepare($sql);
+		$stmt->execute();
+		while($row=$stmt->fetch(PDO::FETCH_ASSOC)) {
 			$text[]=$row["font_name"]."\t".$row["file"];
+        }
+        $file = fopen (ROOT_PATH.'fonts/fonts.list',"w");
 		fwrite($file, implode("\n",$text));
 		fclose($file);
 	}
 
 }//END CLASS
-?>
+
