@@ -452,18 +452,24 @@ class gcMapfile{
         
 		$owsUrl = null;
 		if (defined('GISCLIENT_OWS_URL')) {
-			
-			$owsUrl = rtrim(GISCLIENT_OWS_URL, '?&');
-			
-			if (false === ($owsUrlQueryPart = parse_url($owsUrl, PHP_URL_QUERY))) {
-				throw new Exception("Could not parse '". GISCLIENT_OWS_URL . "' as string");
+			$url = parse_url(GISCLIENT_OWS_URL);
+			if(basename($url["path"])=='mapserv'){
+				$owsUrl=sprintf("%s%s?map=%smap/%s/%s.map",PUBLIC_HOST,$url["path"],ROOT_PATH,$this->projectName,$mapFile);
 			}
-			if(!empty($owsUrlQueryPart)) {
-				$sep = '&';
-			} else {
-				$sep = '?';
+			else{
+				$owsUrl = rtrim(GISCLIENT_OWS_URL, '?&');
+			
+				if (false === ($owsUrlQueryPart = parse_url($owsUrl, PHP_URL_QUERY))) {
+					throw new Exception("Could not parse '". GISCLIENT_OWS_URL . "' as string");
+				}
+				if(!empty($owsUrlQueryPart)) {
+					$sep = '&';
+				} else {
+					$sep = '?';
+				}
+				$owsUrl .= $sep . 'project='.$this->projectName.'&map='.$mapFile;
 			}
-			$owsUrl .= $sep . 'project='.$this->projectName.'&map='.$mapFile;
+			
 		}        
 
         $wms_onlineresource = '';
