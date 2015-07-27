@@ -1,5 +1,7 @@
 SET search_path = gisclient_32, pg_catalog;
 
+
+
 CREATE OR REPLACE VIEW seldb_catalog AS 
          SELECT (-1) AS id, 'Seleziona ====>' AS opzione, '0' AS project_name
 UNION ALL 

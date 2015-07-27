@@ -24,6 +24,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 if (!file_exists("../../config/config.php")) die ("Manca setup");
 include_once "../../config/config.php";
 include_once ROOT_PATH."lib/i18n.php";
+include_once ADMIN_PATH."lib/gcSymbol.class.php";
+
 header("Content-Type: text/html; Charset=".CHAR_SET);
 header("Cache-Control: no-cache, must-revalidate, private, pre-check=0, post-check=0, max-age=0");
 header("Expires: " . gmdate('D, d M Y H:i:s', time()) . " GMT");
@@ -40,8 +42,9 @@ if(!empty($_REQUEST['logout'])) {
 }
 
 if(!empty($_POST['username']) && !empty($_POST['password'])) {
-    $user->login($_POST['username'], $_POST['password']);
+    $user->login($_POST['username'], md5($_POST['password']));
 }
+
 
 if (!$user->isAuthenticated()) {
 	include_once ADMIN_PATH."enter.php";
@@ -56,7 +59,7 @@ $arr_noaction=Array("chiudi","annulla","avvia importazione");
 if (!empty($_REQUEST["parametri"]))
 	$param=$_REQUEST["parametri"];
 
-$action=@array_pop(@array_keys($_POST["azione"]));
+//FIXME: 2nd parameter not in constructor signature, thus useless
 $p=new page($_REQUEST,1);
 
 $p->get_conf();
@@ -83,9 +86,9 @@ $initI18n = 'false';
 if($p->initI18n()) $initI18n = 'true';
 
 $initDataManager = 'false';
+$db = GCApp::getDB();
 if(defined('USE_DATA_IMPORT') && USE_DATA_IMPORT == true && $p->livello == 'catalog' && $p->mode == 0) {
 	$sql = 'select connection_type from '.DB_SCHEMA.'.catalog where catalog_id=?';
-	$db = GCApp::getDB();
 	$stmt = $db->prepare($sql);
 	$stmt->execute(array($p->parametri['catalog']));
 	$catalogType = $stmt->fetchColumn(0);
@@ -122,7 +125,6 @@ if(isset($p->parametri['project'])) {
 	<script type="text/javascript" src="js/administrator.js"></script>
 	<script type="text/javascript" src="js/layout.js"></script>
 	<script type="text/javascript" src="js/options.js"></script>
-	<script type="text/javascript" src="js/cache.js"></script>
 	<?php if($initDataManager == 'true') { ?>
 	<link href="js/jquery/uploadify/uploadify.css" type="text/css" rel="stylesheet" />
 	<script type="text/javascript" src="js/datamanager.js"></script>
@@ -148,6 +150,7 @@ if(isset($p->parametri['project'])) {
 		?>var errors = ["<?php echo implode('","', $errors); ?>"];<?php
 	}?>
 	</script>
+	<script type="text/javascript" src="js/opentype/opentype.min.js"></script>
 </head>
 <body>
 <div id="container">
@@ -157,7 +160,7 @@ if(isset($p->parametri['project'])) {
 	</div>
 	<div class="ui-layout-center">
 		<div id="containment" style="position: relative;">
-		<?php $p->writePage($Errors,$Notice); ?>
+		<?php /* FIXME: signature accepts only one parameter */$p->writePage($Errors,$Notice); ?>
 		<form method="POST" id="frm_param" name="frm_param"><?php $p->write_parameter(); ?></form>
 		<?php include ADMIN_PATH."inc/inc.window.php"; ?>
 		</div>
@@ -167,7 +170,13 @@ if(isset($p->parametri['project'])) {
 		</div>
 	</div>
 	<div class="ui-layout-south">
-		GisClient<span class="color">Author</span> - &copy; 2012
+		GisClient<span class="color">Author</span>
+		<?php
+        $sql="SELECT version_name FROM " . DB_SCHEMA . ".vista_version";
+        $version = $db->query($sql)->fetchColumn(0);
+        echo $version;
+        ?>
+		- 2009 - 2015
 	</div>
 </div>
 </div>

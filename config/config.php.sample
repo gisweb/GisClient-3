@@ -22,53 +22,67 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 /************ Session Name ********/
 define('GC_SESSION_NAME', 'gisclient3'); // se definito, viene chiamato session_name() prima di session_start();
 
-if(!isset($_SESSION)) {
-    if(defined('GC_SESSION_NAME')) session_name(GC_SESSION_NAME);
-    session_start();
-}
-
 ini_set('max_execution_time',90);
 ini_set('memory_limit','512M');
 //error_reporting (E_ERROR | E_PARSE);
-error_reporting  (E_ALL);
+error_reporting  (E_ALL & ~E_STRICT);
 
 define('LONG_EXECUTIONE_TIME',300);
 define('LONG_EXECUTION_MEMORY','512M');
 
+//custom tab files
+//define('TAB_DIR','it-custom');
+//define('FORCE_LANGUAGE', 'it'); // Questi valori devono corrispondere a (it, de, en, ..)
+//define('PRIVATE_MAP_URL', 'http://localhost/map/index.php');
+//define('EXTERNAL_LOGIN_KEY', 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx');
 
 /*******************Installation path *************************/
-define('ROOT_PATH','/ms4w/apps/gisclient-3.0/');
-define('PUBLIC_URL', 'http://localhost/gisclient-3.0/');
-define('MAP_URL', 'http://localhost/gisclient-3.0/template/');
-define('IMAGE_PATH','/ms4w/apps/tmp/ms_tmp/');
+define('ROOT_PATH', realpath(__DIR__.'/..').'/');
+define('PUBLIC_URL', 'http://localhost/gisclient-3/');
+define('MAP_URL', 'http://localhost/gisclient-3/template/');
+define('IMAGE_PATH','/tmp/');
 define('IMAGE_URL','/tmp/');
-define('TILES_CACHE','/ms4w/apps/gisclient-3.0/public/services/tms/');
-define('OPENLAYERS','http://openlayers.org/dev/OpenLayers.js');
+define('PROJ_LIB',"/ms4w/proj");
+define('TILES_CACHE','/ms4w/apps/gisclient-3/public/services/tms/');
+define('OPENLAYERS','http://cdnjs.cloudflare.com/ajax/libs/openlayers/2.13.1/OpenLayers.js');
 //define('PROJ_LIB',"/msiis/proj/nad/");
 /*******************                  *************************/
 
 /*******************OWS service url *************************/
-define('GISCLIENT_OWS_URL','http://localhost/gisclient/services/ows.php');//NON E' OBBLIGATORIO
-define('GISCLIENT_TMS_URL','http://localhost/gisclient/services/tms/');//NON E' OBBLIGATORIO
-define('MAPSERVER_URL', 'http://192.168.0.13/cgi-bin/mapserv?'); //NON E' OBBLIGATORIO (serve per le richieste WFS di OpenLayers, quando il loadparams non funziona, vedi ows.php commento #LOADPARAMS)
-/*******************                  *************************/
+define('GISCLIENT_OWS_URL', PUBLIC_URL.'services/ows.php');//NON E' OBBLIGATORIO
+define('GISCLIENT_TMS_URL', PUBLIC_URL.'services/tms/');//NON E' OBBLIGATORIO
+
+/********************* MAPPROXY ***************/
+define('MAPSERVER_URL', 'http://localhost/cgi-bin/mapserv'); //NON E' OBBLIGATORIO (serve per le richieste WFS di OpenLayers, quando il loadparams non funziona, vedi ows.php commento #LOADPARAMS)
+define('MAPSERVER_BINARY_PATH', '/usr/lib/cgi-bin/mapserv');
+define('MAPPROXY_PATH', '/opt/mapproxy/');
+define('MAPPROXY_URL', '/');
+define('MAPPROXY_CACHE_PATH', '/data/tiles/');
+define('MAPPROXY_CACHE_TYPE', 'mbtiles'); //SUPPORTED:file/mbtiles/sqlite
+define('MAPPROXY_DEMO', true);
+define('MAPPROXY_GRIDS_NUMLEVELS', 20);
 
 /**************** PRINT - EXPORT ***************/
 define('GC_PRINT_TPL_DIR', ROOT_PATH.'public/services/print/');
 define('GC_PRINT_TPL_URL', PUBLIC_URL.'services/print/');
 define('GC_PRINT_IMAGE_SIZE_INI', ROOT_PATH.'config/print_image_size.ini');
-define('GC_WEB_TMP_DIR', ROOT_PATH.'public/services/print/tmp/');
-define('GC_WEB_TMP_URL', PUBLIC_URL.'services/print/tmp/');
+define('GC_WEB_TMP_DIR', ROOT_PATH.'public/services/tmp/');
+define('GC_WEB_TMP_URL', PUBLIC_URL.'services/tmp/');
 define('GC_PRINT_LOGO_SX', 'http://localhost/images/logo_sx.gif');
 define('GC_PRINT_LOGO_DX', 'http://localhost/images/logo_dx.gif');
-define('GC_FOP_LIB', ROOT_PATH.'lib/fop.php');
 define('GC_FOP_CMD', '/usr/local/fop/fop');
+define('GC_FOP_LIB', ROOT_PATH.'lib/fop.php');
 define('GC_PRINT_SAVE_IMAGE', true); // baco mapscript: il saveImage a volte funziona solo specificando il nome del file, altre volte funziona solo se NON si specifica il nome del file
-define('PRINT_RELATIVE_URL_PREFIX', 'http://localhost'); // se GISCLIENT_OWS_URL è relativo, questo prefisso viene aggiunto in fase di stampa
+define('PRINT_RELATIVE_URL_PREFIX', 'http://localhost'); // se GISCLIENT_OWS_URL Ã¨ relativo, questo prefisso viene aggiunto in fase di stampa
+
+/****** print vectors ********/
+define('PRINT_VECTORS_TABLE', 'print_vectors');
+define('PRINT_VECTORS_SRID', 32632);
 
 /******************* TINYOWS **************/
 define('TINYOWS_PATH', '/var/www/cgi-bin');
 define('TINYOWS_EXEC', 'tinyows');
+define('TINYOWS_FILES', ROOT_PATH.'tinyows/');
 define('TINYOWS_SCHEMA_DIR', '/usr/share/tinyows/schema/');
 define('TINYOWS_ONLINE_RESOURCE', PUBLIC_URL.'services/tinyows/');
 
@@ -76,15 +90,8 @@ define('TINYOWS_ONLINE_RESOURCE', PUBLIC_URL.'services/tinyows/');
 define('REDLINE_SCHEMA', 'public'); //non obbligatorio, default public
 define('REDLINE_TABLE', 'annotazioni');
 define('REDLINE_SRID', '4326');
-define('REDLINE_FONT', 'arial'); // non obbligatorio, default arial
+define('REDLINE_FONT', 'dejavu-sans-bold'); // non obbligatorio, default arial
 
-/************* MAPPROXY ***************/
-define('MAPPROXY', true);
-define('MAPPROXY_URL', 'http://gisclient.rr.nu/ows/');
-define('MAPSERVER_BINARY_PATH', '/usr/lib/cgi-bin/mapserv');
-define('MAPPROXY_CACHE_PATH', '/data/tiles/');
-
-require_once (ROOT_PATH."lib/postgres.php");
 require_once (ROOT_PATH."lib/debug.php");
 require_once (ROOT_PATH."config/config.db.php");
 require_once (ROOT_PATH.'lib/gcapp.class.php');
@@ -98,7 +105,7 @@ if(!defined('DEBUG')) define('DEBUG', 1); // Debugging 0 off 1 on
 
 require_once (ROOT_PATH."config/login.php");
 
-//COSTANTI DEI REPORT
+/****************** QUERY REPORTS ***************+*/
 define('MAX_REPORT_ROWS',5000);
 define('REPORT_PROJECT_NAME','REPORT');
 define('REPORT_MAPSET_NAME','report');
@@ -125,13 +132,14 @@ define('COLOR_REDLINE','0 0 255');//Colore Line di contorno oggetti poligono o l
 define('OBJ_COLOR_SELECTION','255 255 0');//Colore Line di contorno oggetti poligono o linea selezionati
 define('MAP_DPI',72);//Mapserver map resolution
 define('TILE_SIZE',256);//Mapserver map resolution
+// define('SERVICE_MAX_RESOLUTION',156543.03392812); // WMTS: Calcolare in base al valore presente nel campo ScaleDenominator del GetCapabilities (nella TileMatrix 0)
+// define('SERVICE_MIN_ZOOM_LEVEL',7); // WMTS: min zoom level (default: 0 for google maps)
+// define('SERVICE_MAX_ZOOM_LEVEL',19); // WMTS: max zoom level (default: 21 for google maps)
 define('PDF_K',2);//Mapserver map resolution
 
-define('SCALE','1000000,500000,250000,100000,50000,25000,10000,7500,5000,4000,3000,2000,1000,900,800,700,600,500,400,300,200,100,50');
-define('GMAP_MIN_ZOOM_LEVEL',6);
+define('DEFAULT_SCALE_LIST','2000000 1000000 500000 250000 200000 100000 50000 25000 10000 5000 2000 1000 500 250');
 
-
-//Icone della legenda
+/****************** LEGEND ***************+*/
 define('LEGEND_ICON_W',24);
 define('LEGEND_ICON_H',16);
 define('LEGEND_POINT_SIZE',15);
@@ -139,10 +147,20 @@ define('LEGEND_LINE_WIDTH',1);
 define('LEGEND_POLYGON_WIDTH',2);
 define('PRINT_PDF_FONT','times');
 
-//custom tab files
-//define('TAB_DIR','geoweb');
-
+/****************** DATA MANAGER ***************+*/
 define('USE_DATA_IMPORT', false);
+define('CURRENT_EDITING_USER_TABLE', 'gc_current_editing_user');
+//define('USE_PHP_EXCEL', true);
+//define('MEASURE_AREA_COL_NAME', 'gc_area'); 
+//define('MEASURE_LENGTH_COL_NAME', 'gc_length'); 
+//define('COORDINATE_X_COL_NAME', 'gc_coordinate_x');
+//define('COORDINATE_Y_COL_NAME', 'gc_coordinate_y'); 
+//define('LAST_EDIT_USER_COL_NAME', 'gc_last_edit_user'); 
+//define('LAST_EDIT_DATE_COL_NAME', 'gc_last_edit_date');
+//define('UPLOADED_FILES_PRIVATE_PATH', ROOT_PATH.'files/'); 
+//define('UPLOADED_FILES_PUBLIC_PATH', ROOT_PATH.'public/services/files/'); 
+//define('UPLOADED_FILES_PUBLIC_URL', PUBLIC_URL.'services/files/');
+
 define('CLIENT_LOGO', null);
 
 define('MAPFILE_MAX_SIZE', '4096');
@@ -153,7 +171,7 @@ define('OWS_CACHE_TTL_OPEN', 4*60*60); // Map cache for the 1st open of the map
 //define('DYNAMIC_LAYERS', ''); // comma separated list of dynamic layers (same url different result)
 
 $GEOLOCATOR_CONFIG = array(
-    'pei' => array(
+    'mapset' => array(
         'namefield'=>'search_name',
         'idfield'=>'id',
         'geomfield'=>'the_geom',

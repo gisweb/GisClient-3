@@ -1,3 +1,20 @@
+flashIsAvailable = function () {
+    var hasFlash = false;
+    try {
+      var fo = new ActiveXObject('ShockwaveFlash.ShockwaveFlash');
+      if (fo) {
+        hasFlash = true;
+      }
+    } catch (e) {
+      if (navigator.mimeTypes
+            && navigator.mimeTypes['application/x-shockwave-flash'] !== undefined
+            && navigator.mimeTypes['application/x-shockwave-flash'].enabledPlugin) {
+        hasFlash = true;
+      }
+    }
+    return hasFlash;
+}
+
 $(document).ready(function() {
 	if(initDataManager != true || $('#catalog').length < 1) {
 		return;
@@ -7,6 +24,9 @@ $(document).ready(function() {
 	dataManager.checkAvailableImports();
 	
 	$('a[data-action="data_manager"]').show().click(function(event) {
+        if (!flashIsAvailable()) {
+            $('span.flash_is_missing_message').css('display', 'inline-block');
+        }
 		event.preventDefault();
 		
 		$('div#import_dialog').dialog('open');
@@ -94,7 +114,7 @@ $(document).ready(function() {
 			$('#raster_file_upload').uploadifySettings('scriptData', {directory:directory});
 			dataManager.checkUploadFolderName(directory);
 		},
-		fileExt: '*.tif;*.tiff;*.tfw;*.ecw;*.jpg;*.jpeg;*.jgw;',
+		fileExt: '*.tif;*.tiff;*.tfw;*.ecw;*.jpg;*.jpeg;*.jgw;*.png;*.pgw;*.gif;*.gfw;',
 		fileDesc: 'Raster',
 		scriptData: {action:'upload-raster', catalog_id:$('#catalog').val()}
 	});
@@ -110,20 +130,40 @@ $(document).ready(function() {
 	$('div#import_dialog button[name="tileindex"]').button().hide().click(function(event) {
 		event.preventDefault();
 		dataManager.createTileindex();
+		dataManager.createPyramidRaster();
 	});
 	
+    var fieldTypeOptions = '';
+    $.each(dataManager.columnTypes, function(dbType, type) {
+        fieldTypeOptions += '<option value="'+dbType+'">'+type+'</option>';
+    });
+    
 	$('div#import_dialog a[data-action="add_column"]').click(function(event) {
 		event.preventDefault();
 		
 		var numColumns = $('div#import_dialog input[name="num_columns"]').val();
-		var html = '<tr><td><input type="text" name="column_name_'+numColumns+'"></td><td><select name="column_type_'+numColumns+'">';
-		$.each(dataManager.columnTypes, function(dbType, type) {
-			html += '<option value="'+dbType+'">'+type+'</option>';
-		});
-		html += '</select></td></tr>';
+		var html = '<tr><td><input type="text" name="column_name_'+numColumns+'"></td><td><select name="column_type_'+numColumns+'">' +
+            fieldTypeOptions + '</select></td></tr>';
 		$('div#import_dialog table[data-role="columns"]').append(html);
 		$('div#import_dialog input[name="num_columns"]').val(parseInt(numColumns)+1);
 	});
+    
+    $('div#add_column_dialog').dialog({
+		title: 'Add column',
+		width: 500,
+		height: 200,
+		autoOpen: false
+	});
+    var html = '<tr><td><input type="text" name="column_name"></td><td><select name="column_type">' +
+        fieldTypeOptions + '</select></td></tr>';
+    $('div#add_column_dialog table[data-role="columns"]').append(html);
+    
+    $('div#add_column_dialog button[name="add_column"]').click(function(event) {
+        event.preventDefault();
+        
+        dataManager.addColumn();
+    });
+    
 	$('div#import_dialog button[name="create_table"]').click(function(event) {
 		event.preventDefault();
 		
@@ -146,12 +186,21 @@ function GCDataManager(catalogId) {
 		3: 'xls',
         4: 'csv'
 	};
+    
 	this.columnTypes = {
 		text: 'Text',
 		date: 'Date',
 		'double precision': 'Number'
 	};
 	
+    this.showErrorReponseAlert = function(response) {
+        if ('error' in response) {
+            alert(response.error);
+        } else {
+            alert('Error');
+        }
+    }
+    
 	this.checkAvailableImports = function() {
 		var self = this;
 		
@@ -161,8 +210,8 @@ function GCDataManager(catalogId) {
 			data: {action:'get-available-imports'},
 			success: function(response) {
 				if(typeof(response) != 'object' || response == null || typeof(response.result) == 'undefined' || response.result != 'ok') {
-					alert('Error');
-					return;
+                    self.showErrorReponseAlert(response);
+                    return;
 				}
 				
 				$.each(self.tileTypes, function(index, name) {
@@ -170,6 +219,9 @@ function GCDataManager(catalogId) {
 						$('div#import_dialog div#import_dialog_tabs').tabs('disable', parseInt(index));
 					}
 				});
+                
+                //self.hasLastEditColumn = !!response.lastEditColumn;
+                //self.hasMeasureColumn = !!response.measureColumn;
 			}
 		});
 	}
@@ -195,7 +247,7 @@ function GCDataManager(catalogId) {
 				self.fileType = 'csv';
 			break;
 			default:
-				alert('Not implemented');
+				alert('file type ' + index + 'Not implemented');
 				return;
 			break;
 		}
@@ -213,7 +265,7 @@ function GCDataManager(catalogId) {
 			data: {action:'delete-file', file_name:fileName, file_type:self.fileType},
 			success: function(response) {
 				if(typeof(response) != 'object' || response == null || typeof(response.result) == 'undefined' || response.result != 'ok') {
-					alert('Error');
+                    self.showErrorReponseAlert(response);
 					return;
 				}
 				
@@ -233,7 +285,7 @@ function GCDataManager(catalogId) {
 			data: {action:'delete-table', table_name:tableName},
 			success: function(response) {
 				if(typeof(response) != 'object' || response == null || typeof(response.result) == 'undefined' || response.result != 'ok') {
-					alert('Error');
+                    self.showErrorReponseAlert(response);
 					return;
 				}
 				
@@ -253,7 +305,7 @@ function GCDataManager(catalogId) {
 			data: {action:'empty-table', table_name:tableName},
 			success: function(response) {
 				if(typeof(response) != 'object' || response == null || typeof(response.result) == 'undefined' || response.result != 'ok') {
-					alert('Error');
+                    self.showErrorReponseAlert(response);
 					return;
 				}
 				
@@ -271,7 +323,7 @@ function GCDataManager(catalogId) {
 			data: {action:'add-last-edit-column', table_name:tableName},
 			success: function(response) {
 				if(typeof(response) != 'object' || response == null || typeof(response.result) == 'undefined' || response.result != 'ok') {
-					alert('Error');
+                    self.showErrorReponseAlert(response);
 					return;
 				}
 				
@@ -289,7 +341,7 @@ function GCDataManager(catalogId) {
 			data: {action:'add-measure-column', table_name:tableName},
 			success: function(response) {
 				if(typeof(response) != 'object' || response == null || typeof(response.result) == 'undefined' || response.result != 'ok') {
-					alert('Error');
+                    self.showErrorReponseAlert(response);
 					return;
 				}
 				
@@ -307,7 +359,7 @@ function GCDataManager(catalogId) {
 			data: {action:'get-postgis-tables'},
 			success: function(response) {
 				if(typeof(response) != 'object' || response == null || typeof(response.result) == 'undefined' || response.result != 'ok') {
-					return alert('Error');
+                    self.showErrorReponseAlert(response);
 				}
 				
 				var html = '<table><tr><th>Tablename</th><th>SRID</th><th>Type</th><th></th></tr>';
@@ -316,6 +368,7 @@ function GCDataManager(catalogId) {
 						html += '<tr><td>'+table.name+'</td><td>'+table.srid+'</td><td>'+table.type+' ('+table.dim+'d)</td>'+
 							'<td><a href="#" class="button" data-action="delete" data-table="'+table.name+'">Delete</a>'+
                             '<a href="#" class="button" data-action="empty" data-table="'+table.name+'">Empty</a>'+
+							'<a href="#" class="button" data-action="add_column" data-table="'+table.name+'">Add column</a>'+
 							'<a href="#" class="button" data-action="export_shp" data-table="'+table.name+'">Export SHP</a>';
                         if(!table.has_last_edit_date_column && !table.has_last_edit_date_column) {
                             html += '<a href="#" class="button" data-action="add_lastedit_column" data-table="'+table.name+'">Add Last edit col</a>';
@@ -324,6 +377,7 @@ function GCDataManager(catalogId) {
                             html += '<a href="#" class="button" data-action="add_measure_column" data-table="'+table.name+'">Add measure col</a>';
                         }
                         html += '</td></tr>';
+
 					} else {
 						html += '<tr><td>'+table.name+'</td><td></td><td>Alphanumeric</td>'+
 							'<td><a href="#" class="button" data-action="delete" data-table="'+table.name+'">Delete</a>'+
@@ -337,12 +391,14 @@ function GCDataManager(catalogId) {
 				$('div#import_dialog div[data-role="table_list"] a[data-action="delete"]').button().click(function(event) {
 					event.preventDefault();
 					
+                    $('span', $(this)).html('Loading..');
 					var tableName = $(this).attr('data-table');
 					self.deleteTable(tableName);
 				});
 				$('div#import_dialog div[data-role="table_list"] a[data-action="export_shp"]').button().click(function(event) {
 					event.preventDefault();
 					
+                    $('span', $(this)).html('Loading..');
 					var tableName = $(this).attr('data-table');
 					self.exportShp(tableName);
 				});
@@ -363,6 +419,13 @@ function GCDataManager(catalogId) {
 					
 					var tableName = $(this).attr('data-table');
 					self.emptyTable(tableName);
+				});
+				$('div#import_dialog div[data-role="table_list"] a[data-action="add_column"]').button().click(function(event) {
+					event.preventDefault();
+					
+					var tableName = $(this).attr('data-table');
+					self.showAddColumnDialog(tableName);
+                    
 				});
 				$('div#import_dialog div[data-role="table_list"] a[data-action="add_lastedit_column"]').button().click(function(event) {
 					event.preventDefault();
@@ -418,7 +481,7 @@ function GCDataManager(catalogId) {
 			data: params,
 			success: function(response) {
 				if(typeof(response) != 'object' || response == null || typeof(response.result) == 'undefined' || response.result != 'ok') {
-					return alert('Error');
+                    self.showErrorReponseAlert(response);
 				}
 				
 				$('div#import_dialog select[name="'+type+'_table_name_select"]').empty();
@@ -444,7 +507,7 @@ function GCDataManager(catalogId) {
 			data: {action:'check-upload-folder', directory:directory},
 			success: function(response) {
 				if(typeof(response) != 'object' || response == null || typeof(response.result) == 'undefined' || response.result != 'ok') {
-					alert('Error');
+                    self.showErrorReponseAlert(response);
 					return;
 				}
 				if(response.data != 'ok') {
@@ -466,7 +529,7 @@ function GCDataManager(catalogId) {
 			data: {action:'get-uploaded-files', file_type:self.fileType},
 			success: function(response) {
 				if(typeof(response) != 'object' || response == null || typeof(response.result) == 'undefined' || response.result != 'ok') {
-					alert('Error');
+                    self.showErrorReponseAlert(response);
 					return;
 				}
 				
@@ -529,7 +592,7 @@ function GCDataManager(catalogId) {
 				$('div#import_dialog button[name="import"]').show();
 			break;
 			default:
-				return alert('System error');
+				return alert('unknown file type "' + self.fileType + '"');
 			break;
 		}
 	};
@@ -624,6 +687,12 @@ function GCDataManager(catalogId) {
 		
 		self.ajaxImport('raster', 'create-tileindex');
 	};
+
+	this.createPyramidRaster = function() {
+		var self = this;
+		
+		self.ajaxImport('raster', 'create-pyramid-raster');
+	};
 	
 	this.ajaxImport = function(prefix, action, customParams) {
 		var self = this;
@@ -717,7 +786,44 @@ function GCDataManager(catalogId) {
 			}
 		});		
 	};
+    
+    this.showAddColumnDialog = function(tableName) {
+        $('div#add_column_dialog span[data-role="tablename"]').html(tableName);
+        $('div#add_column_dialog').dialog('open');
+        console.log($('div#add_column_dialog'));
+    };
 	
+    this.addColumn = function() {
+        var self = this;
+        
+        var tableName = $('div#add_column_dialog span[data-role="tablename"]').html();
+        var columnName = $('div#add_column_dialog input[name="column_name"]').val();
+        var columnType = $('div#add_column_dialog select[name="column_type"]').val();
+        
+        if(columnName == '') return alert('Please insert a column name');
+        
+		var params = {
+			action: 'add-column',
+			table_name: tableName,
+			column_name: columnName,
+			column_type: columnType
+		};
+				
+		self.ajaxRequest({
+			type: 'POST',
+			data: params,
+			success: function(response) {
+				if(typeof(response) != 'object' || response == null || typeof(response.result) == 'undefined' || response.result != 'ok') {
+					if(typeof(response.result) != 'undefined' && response.result == 'error' && typeof(response.error) != 'undefined') {
+						return $('div#add_column_dialog div.logs').html(response.error).focus();
+					}
+					return alert('Error');
+				}
+				$('div#add_column_dialog').dialog('close');
+			}
+		});		
+    };
+    
 	this.showLoading = function() {
 		$('div#import_dialog div.loading').show();
 	};

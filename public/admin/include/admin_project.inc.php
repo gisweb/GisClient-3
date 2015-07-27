@@ -22,7 +22,7 @@
 
 	if (is_array($results) && count($results)>0){
 		foreach ($results as $val){
-			$data[]=Array("presente"=>$val["presente"],"project_name"=>$val["project_name"],"username"=>$val["username"],"groupname"=>$groupname);
+			$data[]=Array("presente"=>$val["presente"],"project_name"=>$val["project_name"],"username"=>$val["username"]);
 		}
 	}
 	else{

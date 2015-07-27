@@ -1,0 +1,205 @@
+MAP
+  CONFIG "PROJ_LIB" "/usr/share/proj"
+  EXTENT 1476100.11486077 5364002 1476975.01013923 5364476.5
+  FONTSET "../../fonts/fonts.list"
+  IMAGETYPE "png"
+  NAME "MS"
+  RESOLUTION 150
+  SIZE 1524 827
+  STATUS ON
+  UNITS METERS
+
+  OUTPUTFORMAT
+    NAME "PNG"
+    MIMETYPE "image/png"
+    DRIVER "AGG/PNG"
+    EXTENSION "png"
+    IMAGEMODE RGBA
+    TRANSPARENT TRUE
+    FORMATOPTION "INTERLACE=OFF"
+  END # OUTPUTFORMAT
+
+  PROJECTION
+    "init=epsg:3857"
+  END # PROJECTION
+  LEGEND
+    KEYSIZE 20 10
+    KEYSPACING 5 5
+    LABEL
+      SIZE MEDIUM
+      OFFSET 0 0
+      SHADOWSIZE 1 1
+      TYPE BITMAP
+    END # LABEL
+    STATUS OFF
+  END # LEGEND
+
+  QUERYMAP
+    SIZE -1 -1
+    STATUS OFF
+    STYLE HILITE
+  END # QUERYMAP
+
+  SCALEBAR
+    BACKGROUNDCOLOR 100 100 100
+    COLOR 250 250 250
+    IMAGECOLOR 255 255 255
+    INTERVALS 4
+    LABEL
+      FONT "verdana"
+      SIZE 15
+      OFFSET 0 0
+      SHADOWSIZE 1 1
+      TYPE TRUETYPE
+    END # LABEL
+    OUTLINECOLOR 0 0 0
+    POSTLABELCACHE TRUE
+    SIZE 417 6
+    STATUS OFF
+    TRANSPARENT TRUE
+    UNITS METERS
+  END # SCALEBAR
+
+  WEB
+    IMAGEPATH "/tmp/ms_tmp/"
+    IMAGEURL "/tmp/"
+  END # WEB
+
+  LAYER
+    CONNECTION "http://sit.bonificamarche.it//services/ows.php?PROJECT=bonificamarche&MAP=consorziobonifica&GC_SESSION_ID=km3kf9sbhdt3253j18aalum2k6&RESOLUTION=150"
+    CONNECTIONTYPE WMS
+    METADATA
+      "wms_srs"	"EPSG:3857"
+      "wms_name"	"osm"
+      "wms_format"	"image/png"
+      "wms_server_version"	"1.1.1"
+    END # METADATA
+    NAME "print_layer_0"
+    PROCESSING "CLOSE_CONNECTION=NORMAL"
+    PROJECTION
+      "init=epsg:3857"
+    END # PROJECTION
+    STATUS ON
+    TILEITEM "location"
+    TRANSFORM FALSE
+    TYPE RASTER
+    UNITS METERS
+  END # LAYER
+
+  LAYER
+    CONNECTION "http://sit.bonificamarche.it/services/ows.php?PROJECT=bonificamarche&MAP=consorziobonifica&GC_SESSION_ID=km3kf9sbhdt3253j18aalum2k6&RESOLUTION=150"
+    CONNECTIONTYPE WMS
+    METADATA
+      "wms_srs"	"EPSG:3857"
+      "wms_name"	"grp_confini_regionali"
+      "wms_format"	"image/png"
+      "wms_server_version"	"1.1.1"
+    END # METADATA
+    NAME "print_layer_1"
+    PROCESSING "CLOSE_CONNECTION=NORMAL"
+    PROJECTION
+      "init=epsg:3857"
+    END # PROJECTION
+    STATUS ON
+    TILEITEM "location"
+    TRANSFORM FALSE
+    TYPE RASTER
+    UNITS METERS
+  END # LAYER
+
+  LAYER
+    CONNECTION "http://sit.bonificamarche.it/services/ows.php?PROJECT=bonificamarche&MAP=consorziobonifica&&GC_SESSION_ID=km3kf9sbhdt3253j18aalum2k6&RESOLUTION=150"
+    CONNECTIONTYPE WMS
+    METADATA
+      "wms_srs"	"EPSG:3857"
+      "wms_name"	"grp_comprensori"
+      "wms_format"	"image/png"
+      "wms_server_version"	"1.1.1"
+    END # METADATA
+    NAME "print_layer_2"
+    PROJECTION
+      "init=epsg:3857"
+    END # PROJECTION
+    STATUS ON
+    TILEITEM "location"
+    TYPE RASTER
+    UNITS METERS
+  END # LAYER
+
+  LAYER
+    CONNECTION "http://sit.bonificamarche.it/services/ows.php?PROJECT=bonificamarche&MAP=consorziobonifica&&GC_SESSION_ID=km3kf9sbhdt3253j18aalum2k6&RESOLUTION=150"
+    CONNECTIONTYPE WMS
+    METADATA
+      "wms_srs"	"EPSG:3857"
+      "wms_name"	"grp_reticolo_idrografico"
+      "wms_format"	"image/png"
+      "wms_server_version"	"1.1.1"
+    END # METADATA
+    NAME "print_layer_3"
+    PROJECTION
+      "init=epsg:3857"
+    END # PROJECTION
+    STATUS ON
+    TILEITEM "location"
+    TYPE RASTER
+    UNITS METERS
+  END # LAYER
+
+  LAYER
+    CONNECTION "http://sit.bonificamarche.it/services/ows.php?PROJECT=bonificamarche&MAP=consorziobonifica&&GC_SESSION_ID=km3kf9sbhdt3253j18aalum2k6&RESOLUTION=150"
+    CONNECTIONTYPE WMS
+    METADATA
+      "wms_srs"	"EPSG:3857"
+      "wms_name"	"grp_fogli"
+      "wms_format"	"image/png"
+      "wms_server_version"	"1.1.1"
+    END # METADATA
+    NAME "print_layer_4"
+    PROJECTION
+      "init=epsg:3857"
+    END # PROJECTION
+    STATUS ON
+    TILEITEM "location"
+    TYPE RASTER
+    UNITS METERS
+  END # LAYER
+
+  LAYER
+    CONNECTION "http://sit.bonificamarche.it/services/ows.php?PROJECT=bonificamarche&MAP=consorziobonifica&&GC_SESSION_ID=km3kf9sbhdt3253j18aalum2k6&RESOLUTION=150"
+    CONNECTIONTYPE WMS
+    METADATA
+      "wms_srs"	"EPSG:3857"
+      "wms_name"	"grp_fabbricati"
+      "wms_format"	"image/png"
+      "wms_server_version"	"1.1.1"
+    END # METADATA
+    NAME "print_layer_5"
+    PROJECTION
+      "init=epsg:3857"
+    END # PROJECTION
+    STATUS ON
+    TILEITEM "location"
+    TYPE RASTER
+    UNITS METERS
+  END # LAYER
+
+  LAYER
+    CONNECTION "http://sit.bonificamarche.it/services/ows.php?PROJECT=bonificamarche&MAP=consorziobonifica&&GC_SESSION_ID=km3kf9sbhdt3253j18aalum2k6&RESOLUTION=150"
+    CONNECTIONTYPE WMS
+    METADATA
+      "wms_srs"	"EPSG:3857"
+      "wms_name"	"grp_particelle"
+      "wms_format"	"image/png"
+      "wms_server_version"	"1.1.1"
+    END # METADATA
+    NAME "print_layer_6"
+    PROJECTION
+      "init=epsg:3857"
+    END # PROJECTION
+    STATUS ON
+    TILEITEM "location"
+    TYPE RASTER
+    UNITS METERS
+  END # LAYER
+
+END # MAP

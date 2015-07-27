@@ -17,14 +17,14 @@
 						<a class="button" href="../">Home</a>
 						<a class="button" data-action="data_manager" style="display:none;">Data manager</a>
 						<a class="button" data-action="preview_map" style="display:none;">Preview Map</a>
-						<a class="button" data-action="options">Options</a>
+						<?php if($user->isAdmin()) { ?>
+						<a class="button" data-action="options">Options</a> 
+						<a class="button" data-action="symbology"><?php echo GCAuthor::t('symbology'); ?></a>
+						<?php } ?>
 						<a class="button" data-action="ogc_services" style="display:none;"><?php echo GCAuthor::t('ogc_services'); ?></a>
-                        <?php
+                        <?php 
                         if(!empty($p->parametri['project'])) {
                             echo '<a class="button" data-action="mapfiles_manager">'.GCAuthor::t('online_maps').'</a>';
-                            if(defined('MAPPROXY') && MAPPROXY) {
-                                echo ' <a class="button" data-action="cache_manager">Cache</a>';
-                            }
                         }
                         ?>
 						<?php } else { ?>
@@ -80,21 +80,41 @@
 				</table>
 				<?php } ?>
 			</div>
-            <div id="cache_manager" style="display:none;">
-                <?php if(!empty($p->parametri['project']) && defined('MAPPROXY') && MAPPROXY) { ?>
-				<table border="1" cellpadding="3" class="stiletabella">
-				<tr role="header" class="ui-widget ui-state-default">
-					<th>Cache</th>
-					<th><?php echo GCauthor::t('empty') ?>:</th>
-				</tr>
-                </table>
-                <?php } ?>
-            </div>
-
+			
+			<div id="dialog_symbology" style="display:none;" data-title="<?php echo GCAuthor::t('symbology'); ?>">
+				<ul>
+					<li><a href="#raster">Pixmap</a></li>
+					<li><a href="#font">Font</a></li>
+				</ul>
+				<div id="raster">
+					<ol>
+						<li>Cliccare sul pulsante Sfoglia e selezionare le immagini da importare. </li>
+						<li>Formati supportati: GIF, PNG.</li>
+						<li>Se un simbolo è associato ad uno stile e viene cancellato, lo stile rimarrà senza simbolo</li>
+						<li>La dimensione in pixel sarà quella rappresentata su mappa (dimensioni consigliate 10x10, 15x15, 20x20).</li>
+					</ol>
+					<input id="importSymbols" type="file" multiple><button onclick="importSymbols()">Importa</button>
+					<h2>Elenco dei simboli PIXMAP disponibili</h2>
+					<table border="1" cellpadding="3" class="stiletabella"></table>
+				</div>
+				<div id="font">
+					<ol>
+						<li>Scaricare il template o il font attuale.</li>
+						<li>Editare il font e ricaricarlo.</li>
+						<li>Al termine del caricamento, inserire il nome da dare al simbolo nell'apposito campo.</li>
+						<li>Se il campo nome è vuoto il carattere non verrà importato.</li>
+						<li>Se il campo nome è popolato il carattere verrà importato e sostituito.</li>
+					</ol>
+					<input id="loadFont" type="file" accept=".ttf"><button onclick="fontLoadList()">Carica</button>
+					<a target="_blank" href="getFont.php?font=r3-map-symbols.ttf" class="button">Scarica Attuale</a>
+					<a target="_blank" href="getFont.php?font=r3-map-symbols_tpl.ttf" class="button">Scarica Template</a>
+					<h2>Simboli font (TTF)</h2>
+					<table border="1" cellpadding="3" class="stiletabella" id="glyfList"></table>
+					<button onclick="saveFontSymbols()">Salva</button>
+				</div>
+			</div>
+			
 			<div id="mapfiles_manager" style="display:none;" data-title="<?php echo GCAuthor::t('online_maps') ?>">
-                <?php if(!empty($p->parametri['project'])) { ?>
-                <!--<a href="#" data-action="refresh" data-projectmap="1" data-target="tmp" data-project="<?= $p->parametri['project'] ?>"><?= GCAuthor::t('update') ?></a>TMP | <a href="#" data-action="refresh" data-projectmap="1" data-target="public" data-project="<?= $p->parametri['project'] ?>"><?= GCAuthor::t('update') ?></a>PUBLIC<br>-->
-                
 				<table border="1" cellpadding="3" class="stiletabella">
 				<tr class="ui-widget ui-state-default">
 					<th>Mapset</th>
@@ -102,21 +122,8 @@
 					<th><?php echo GCAuthor::t('temporary') ?></th>
 					<th><?php echo GCAuthor::t('public') ?></th>
 				</tr>
-
-				<?php if(defined('PROJECT_MAPFILE') && PROJECT_MAPFILE){?>
-				<tr><td><b><?php echo GCAuthor::t('project') ?></b></td><td></td><td style="text-align:center;"><a href="#" data-action="refresh" data-projectmap="1" data-target="tmp" data-project="<?= $p->parametri['project'] ?>"><?php echo GCAuthor::t('update') ?></a></td><td style="text-align:center;"><a href="#" data-action="refresh" data-projectmap="1" data-target="public" data-project="<?= $p->parametri['project'] ?>"><?php echo GCAuthor::t('update'); ?></a></td></tr>
-                <?php 
-				if(isset($mapsets)) {
-					foreach($mapsets as $mapset) {
-						echo '<tr>
-							<td>'.$mapset['mapset_title'].' ('.$mapset['mapset_name'].')</td>
-							<td></td>
-							<td style="text-align:center;"><a data-action="view_map" href="'.$mapset['url'].'&tmp=1" target="_blank">Map</a></td>
-							<td style="text-align:center;"><a data-action="view_map" href="'.$mapset['url'].'" target="_blank">Map</a></td>
-						</tr>';
-					}
-				}
-                }else{ 
+				<tr><td><b><?php echo GCAuthor::t('all') ?></b></td><td></td><td style="text-align:center;"><a href="#" data-action="refresh" data-target="tmp" data-mapset=""><?php echo GCAuthor::t('update') ?></a></td><td style="text-align:center;"><a href="#" data-action="refresh" data-target="public" data-mapset=""><?php echo GCAuthor::t('update'); ?></a></td></tr>
+				<?php
 				if(isset($mapsets)) {
 					foreach($mapsets as $mapset) {
 						echo '<tr>
@@ -128,13 +135,9 @@
 					}
 				}
 				?>
-				<tr></tr>
-				<tr><td><b><?php echo GCAuthor::t('all') ?></b></td><td></td><td style="text-align:center;"><a href="#" data-action="refresh" data-target="tmp" data-mapset=""><?php echo GCAuthor::t('update') ?></a></td><td style="text-align:center;"><a href="#" data-action="refresh" data-target="public" data-mapset=""><?php echo GCAuthor::t('update'); ?></a></td></tr>
 				</table>
-                
-                <?php }} ?>
 			</div>
-
+			<!-- TODO: allineare verticalmente, cosi è bruttino -->
 			<div id="import_dialog" style="display:none;">
 				<div id="import_dialog_tabs">
 					<ul>
@@ -142,9 +145,10 @@
 						<li><a href="#import_dialog_raster">Raster</a></li>
 						<li><a href="#import_dialog_postgis">PostgreSQL</a></li>
 						<li><a href="#import_dialog_xls">XLS</a></li>
-						<li><a href="#import_dialog_csv">CSV</a></li>
+						<!-- <li><a href="#import_dialog_csv">CSV</a></li> -->
 					</ul>
 					<div id="import_dialog_shp">
+						<span class="flash_is_missing_message" class="alert_message" style="color:red; background-color:#d0d0d0; padding: 5px; display:none">Flash is not installed, but required for file upload</span><br />
 						<input id="shp_file_upload" name="file_upload" type="file" />
 						<div data-role="file_list">
 						</div>
@@ -154,10 +158,11 @@
 						Method: <input type="radio" name="shp_insert_method" value="create" checked>Create <input type="radio" name="shp_insert_method" value="append">Append <input type="radio" name="shp_insert_method" value="replace">Replace <br />
 						Tablename: <select name="shp_table_name_select" style="display:none;"></select><input type="text" name="shp_table_name"><br />
 						SRID: <input type="text" name="shp_srid"><br />
-						<button name="import" style="display;none">Import</button>
+						<button name="import" style="display:none">Import</button>
 					</div>
 					<div id="import_dialog_raster">
 						Directory: <input type="text" name="dir_name"><br />
+						<span class="flash_is_missing_message" class="alert_message" style="color:red; background-color:#d0d0d0; padding: 5px; display:none">Flash is not installed, but required for file upload</span><br />
 						<input id="raster_file_upload" name="file_upload" type="file" />
 						<div data-role="file_list">
 						</div>
@@ -165,7 +170,7 @@
 						Directory: <input type="text" name="raster_file_name" disabled="disabled"><br />
 						SRID: <input type="text" name="raster_srid"><br />
 						Tablename: <input type="text" name="raster_table_name"><br />
-						<button name="tileindex" style="display;none">Tileindex</button>
+						<button name="tileindex" style="display:none">Tileindex</button>
 					</div>
 					<div id="import_dialog_postgis">
 						<div data-role="table_list">
@@ -190,6 +195,7 @@
 						<button name="create_table">Create</button>
 					</div>
 					<div id="import_dialog_xls">
+						<span class="flash_is_missing_message" class="alert_message" style="color:red; background-color:#d0d0d0; padding: 5px; display:none">Flash is not installed, but required for file upload</span><br />
 						<input id="xls_file_upload" name="file_upload" type="file" />
 						<div data-role="file_list">
 						</div>
@@ -197,9 +203,11 @@
 						File: <input type="text" name="xls_file_name" disabled="disabled"><br />
 						Method: <input type="radio" name="xls_insert_method" value="create" checked>Create <input type="radio" name="xls_insert_method" value="append">Append <input type="radio" name="xls_insert_method" value="replace">Replace <br />
 						Tablename: <select name="xls_table_name_select" style="display:none;"></select><input type="text" name="xls_table_name"><br />
-						<button name="import" style="display;none">Import</button>
+						<button name="import" style="display:none">Import</button>
 					</div>
+					<!--
 					<div id="import_dialog_csv">
+						<span class="flash_is_missing_message" class="alert_message" style="color:red; background-color:#d0d0d0; padding: 5px; display:none">Flash is not installed, but required for file upload</span><br />
 						<input id="csv_file_upload" name="file_upload" type="file" />
 						<div data-role="file_list">
 						</div>
@@ -207,8 +215,9 @@
 						File: <input type="text" name="csv_file_name" disabled="disabled"><br />
 						Method: <input type="radio" name="csv_insert_method" value="create" checked>Create <input type="radio" name="csv_insert_method" value="append">Append <input type="radio" name="csv_insert_method" value="replace">Replace <br />
 						Tablename: <select name="csv_table_name_select" style="display:none;"></select><input type="text" name="csv_table_name"><br />
-						<button name="import" style="display;none">Import</button>
+						<button name="import" style="display:none">Import</button>
 					</div>
+					-->
 				</div>
 				<div class="logs" style="color:red;" tabindex="100">
 				</div>
@@ -216,4 +225,13 @@
 					<img src="../images/ajax_loading.gif">
 				</div>
 			</div>
+            <div id="add_column_dialog" style="display:none;">
+                <p>Add column to <span data-role="tablename"></span></p>
+                <table data-role="columns">
+                <caption>Fields</caption>
+                <tr><th>Field name</th><th>Field type</th></tr>
+                </table>
+                <button name="add_column">Add</button>
+                <div class="logs" style="color:red;" tabindex="100"></div>
+            </div>
 		<!-- ### STANDARD  PAGE  HEADER  FINE ##################################################### -->

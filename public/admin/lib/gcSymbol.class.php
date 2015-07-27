@@ -21,7 +21,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
 class Symbol{
-	
+	public $filter;
+
 	function __construct($table){
 		$this->table=$table;
         $this->db = GCApp::getDB();
@@ -193,7 +194,7 @@ class Symbol{
 		ms_ResetErrorList();
 		try {
 			print_debug(implode("\n",$mapText),null,'symbolmap');
-			$this->oMap = @ms_newMapObjFromString(implode("\n",$mapText),ROOT_PATH.'map');
+			$this->oMap = @ms_newMapObjFromString(implode("\n",$mapText),ROOT_PATH.'map/tmp');
 		} 
 		catch (Exception $e) {
 			$error = ms_GetErrorObj();		

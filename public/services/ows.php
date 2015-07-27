@@ -12,7 +12,7 @@ if(($_SERVER['REQUEST_METHOD'] == 'POST' && strpos($_SERVER['REQUEST_URI'],'GC_E
 // dirotta una richiesta POST di tipo OLWFS al cgi mapserv, per bug su loadparams
 // ADESSO NON SERVE PIU SECONDO ME!
 if (!empty($_REQUEST['gcRequestType']) && $_SERVER['REQUEST_METHOD'] == 'POST' && $_REQUEST['gcRequestType'] == 'OLWFS') {
-	$url = MAPSERVER_URL.'map='.ROOT_PATH.'map/'.$_REQUEST['MAP'].'.map';
+	$url = MAPSERVER_URL.'map='.ROOT_PATH.'map/'.$_REQUEST['PROJECT'].'/'.$_REQUEST['MAP'].'.map';
 	
 	$fileContent = file_get_contents('php://input');
 	file_put_contents('/tmp/postrequest.xml', $fileContent);
@@ -37,7 +37,7 @@ foreach ($_REQUEST as $k => $v) if (is_string($v)) $objRequest->setParameter($k,
 
 //OGGETTO MAP MAPSCRIPT
 $mapfile = $objRequest->getvaluebyname('map');
-$mapPath = ROOT_PATH.'map/';
+$mapPath = ROOT_PATH.'map/'.$_REQUEST['PROJECT'].'/';
 
 // se è definita una lingua, apro il relativo mapfile
 
@@ -49,6 +49,7 @@ $showTmpMapfile = $objRequest->getvaluebyname('tmp');
 if(!empty($showTmpMapfile)) {
 	$mapfile = "tmp.".$mapfile;
 }
+
 
 $oMap = ms_newMapobj($mapPath.$mapfile.".map");
 
@@ -107,6 +108,15 @@ if(!empty($_REQUEST['GCFILTERS'])){
 
 }
 
+
+
+
+
+
+
+
+
+
 /* ------ stabilisco i layer da usare ------ */
 
 // recupero lista layer dal parametro layers
@@ -122,10 +132,10 @@ if($objRequest->getValueByName('service') == 'WMS') {
 
 // avvio la sessione
 if(!isset($_SESSION)) {
-    if(defined('GC_SESSION_NAME')) session_name(GC_SESSION_NAME);
 	if(isset($_REQUEST['GC_SESSION_ID']) && !empty($_REQUEST['GC_SESSION_ID'])) {
 		session_id($_REQUEST['GC_SESSION_ID']);
 	}
+	if(defined('GC_SESSION_NAME')) session_name(GC_SESSION_NAME);
 	session_start();
 }
 
@@ -143,20 +153,26 @@ if(!isset($_SESSION['GISCLIENT_USER_LAYER']) && !empty($layersParameter) && empt
 		}
 	}
 	if($hasPrivateLayers) {
-		if (!isset($_SERVER['PHP_AUTH_USER'])) {
-			header('WWW-Authenticate: Basic realm="Gisclient"');
-			header('HTTP/1.0 401 Unauthorized');
-		} else {
+		if(isset($_REQUEST['PRINTSERVICE'])) {
             $user = new GCUser();
-            if($user->login($_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW'])) {
-                if(defined('PROJECT_MAPFILE') && PROJECT_MAPFILE) {
-                    $user->setAuthorizedLayers(array('project_name'=>$objRequest->getValueByName('map')));
-                } else {
-                    $user->setAuthorizedLayers(array('mapset_name'=>$objRequest->getValueByName('map')));
-                }
-            }
-		}
-	}
+            $user->login('printservice', md5(PRINT_SERVICE_PWD));
+        }
+        elseif (!isset($_SERVER['PHP_AUTH_USER'])) {
+            header('WWW-Authenticate: Basic realm="Gisclient"');
+            header('HTTP/1.0 401 Unauthorized');
+        } else {
+            $user = new GCUser();
+            $user->login($_SERVER['PHP_AUTH_USER'], md5($_SERVER['PHP_AUTH_PW']));
+        }
+    }
+
+    if($user->isAuthenticated()) {
+        if(defined('PROJECT_MAPFILE') && PROJECT_MAPFILE) {
+            $user->setAuthorizedLayers(array('project_name'=>$objRequest->getValueByName('map')));
+        } else {
+            $user->setAuthorizedLayers(array('mapset_name'=>$objRequest->getValueByName('map')));
+        }
+    }
 }
 
 if(!empty($layersParameter)) {
@@ -174,8 +190,8 @@ if(!empty($layersParameter)) {
 		// layer nascosto
 		$hideLayer = $layer->getMetaData("gc_hide_layer");
 		if(strtoupper($objRequest->getvaluebyname('request')) == 'GETMAP' && !empty($hideLayer)) {
-			array_push($layersToRemove, $layer->name);
-			continue;
+			//array_push($layersToRemove, $layer->name);
+			//continue;
 		}
 		// layer privato
 		$privateLayer = $layer->getMetaData('gc_private_layer');
@@ -278,7 +294,9 @@ if (substr($sapi_type, 0, 3) != 'cgi') {
 ms_ioinstallstdouttobuffer(); 
 
 /* Eexecute request */ 
-$oMap->owsdispatch($objRequest);
+//TODO VERIFICARE PERCHÈ SENZA @ DA ERRORE
+@$oMap->owsdispatch($objRequest);
+
 
 
 $contenttype = ms_iostripstdoutbuffercontenttype(); 

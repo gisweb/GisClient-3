@@ -1,7 +1,10 @@
 <?php
-require_once('../../config/config.php');
+require_once '../../config/config.php';
 require_once ROOT_PATH.'lib/ajax.class.php';
-$ajax = new GCAjax();
+require_once ROOT_PATH . 'lib/GCService.php';
+
+$gcService = GCService::instance();
+$gcService->startSession();$ajax = new GCAjax();
 /*
 input array
 array(
@@ -24,6 +27,7 @@ if(empty($_REQUEST['action']) || !in_array($_REQUEST['action'], array('list', 'c
 
 $db = GCApp::getDB();
 $user = new GCUser();
+$username = $user->getUsername();
 
 if($_REQUEST['action'] != 'get') {
 	if($_REQUEST['action'] != 'delete') {
@@ -47,8 +51,8 @@ switch($_REQUEST['action']) {
 	case 'replace':	
 	case 'create':
 		if(empty($_REQUEST['context'])) $ajax->error('Empty context');
-        $username = $user->getUsername();
-        if(empty($username)) $ajax->error('Permission denied');
+		$username = $user->getUsername();
+		if(empty($username)) $ajax->error('Permission denied');
 		$context = json_encode($_REQUEST['context']);
 		if($_REQUEST['action'] == 'replace') {
 			$sql = 'delete from '.DB_SCHEMA.'.usercontext where username=?';

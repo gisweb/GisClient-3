@@ -1,0 +1,2 @@
+ogr2ogr -overwrite -update -f "PostgreSQL"  PG:"host=localhost user=postgres dbname=dbsit password=p0stgr3s port=5432" -lco GEOMETRY_NAME=the_geom -lco  -lco SCHEMA=segnalazioni -nln segnalazioni1  segnalazioni.ovf
+ogr2ogr -overwrite -update -f "PostgreSQL"  PG:"host=localhost user=postgres dbname=dbsit password=p0stgr3s port=5432" -lco GEOMETRY_NAME=the_geom -lco  -lco SCHEMA=segnalazioni_test -nln segnalazioni  segnalazioni.ovf

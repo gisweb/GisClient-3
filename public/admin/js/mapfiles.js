@@ -21,13 +21,9 @@ $(document).ready(function() {
 		var params = {
 			action: 'refresh',
 			target: $(this).attr('data-target'),
-			project: $('input#project').val()
+			project: $('input#project').val(),
+			mapset: $(this).attr('data-mapset')
 		}
-        
-        var mapset = $(this).attr('data-mapset');
-        if(mapset) params.mapset = mapset;
-        
-        if($(this).attr('data-projectmap')) params.projectMapfile = 1;
 		
 		$.ajax({
 			url: 'ajax/mapfiles.php',

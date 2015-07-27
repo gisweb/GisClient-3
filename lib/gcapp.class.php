@@ -3,16 +3,17 @@
 class GCApp {
 	static private $db;
 	static private $dataDBs = array();
-	
+
 	public static function getDB() {
-		if(empty($db)) {
+		if(empty(self::$db)) {
 			$dsn = 'pgsql:dbname='.DB_NAME.';host='.DB_HOST;
 			if(defined('DB_PORT')) $dsn .= ';port='.DB_PORT;
 			try {
 				self::$db = new PDO($dsn, DB_USER, DB_PWD);
 				self::$db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+				self::$db->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
 			} catch(Exception $e) {
-				die('GCApp:Impossibile connettersi al database');
+				die('GCApp:Impossibile connettersi al database '.$dsn);
 			}
 		}
 		return self::$db;
@@ -45,6 +46,15 @@ class GCApp {
 			);
 		}
 	}
+    
+    public static function getCatalogPath($catalogName) {
+        $db = GCApp::getDB();
+        
+        $sql = 'select catalog_path from '.DB_SCHEMA.'.catalog where catalog_name=:catalog_name';
+        $stmt = $db->prepare($sql);
+        $stmt->execute(array('catalog_name'=>$catalogName));
+        return $stmt->fetchColumn(0);
+    }
 
 	public static function prepareInStatement($values) {
 
@@ -97,14 +107,6 @@ class GCApp {
             return $filename;
     }
     
-    public static function schemaExists($dataDb, $schema) {
-        $sql = 'select schema_name from information_schema.schemata '.
-            ' where schema_name = :schema ';
-        $stmt = $dataDb->prepare($sql);
-        $stmt->execute(array('schema'=>$schema));
-        return ($stmt->rowCount() > 0);
-    }
-    
     public static function tableExists($dataDb, $schema, $tableName) {
         $sql = "select table_name from information_schema.tables ".
             " where table_schema=:schema and table_name=:table ";
@@ -141,25 +143,6 @@ class GCApp {
         $stmt->execute(array('schema'=>$schema, 'table'=>$tableName));
         return $stmt->fetchColumn(0);
     }
-    
-    //questa stessa funzione è anche in admin/lib/functions.php
-    //TODO: trovare dove viene usata e sostituirla con questa
-	public static function nameReplace($name){
-
-		$search = explode(","," ,ç,æ,œ,á,é,í,ó,ú,à,è,ì,ò,ù,ä,ë,ï,ö,ü,ÿ,â,ê,î,ô,û,å,e,i,ø,u,.");
-		$replace = explode(",","_,c,ae,oe,a,e,i,o,u,a,e,i,o,u,a,e,i,o,u,y,a,e,i,o,u,a,e,i,o,u,_");
-		if(strtoupper(CHAR_SET)=='UTF-8'){
-			for($i=0;$i<count($search);$i++){
-				$name=str_replace($search[$i],$replace[$i],trim($name));
-			}
-		}
-		else
-			$name = str_replace($search, $replace, trim($name));
-		
-		return $name;
-		//return strtolower($name);
-		
-	}
 }
 
 class GCDataDB {
@@ -184,10 +167,12 @@ class GCDataDB {
 }
 
 class GCAuthor {
-	static public $aInchesPerUnit = array(1=>39.3701,2=>12,3=>1,4=>39370.1,5=>39.3701,6=>63360,7=>4374754);
+	// Da OL 2.13 static public $aInchesPerUnit = array(1=>39.3701,2=>12,3=>1,4=>39370.1,5=>39.370,6=>63360,7=>4374754);
+	static public $aInchesPerUnit_old = array(1=>39.3701,2=>12,3=>1,4=>39370.1,5=>39.3701,6=>63360,7=>4374754);
 	static public $gMapResolutions = array(156543.0339,78271.51695,39135.758475,19567.8792375,9783.93961875,4891.969809375,2445.9849046875,1222.99245234375,611.496226171875,305.7481130859375,152.87405654296876,76.43702827148438,38.21851413574219,19.109257067871095,9.554628533935547,4.777314266967774,2.388657133483887,1.1943285667419434,0.5971642833709717,0.29858214168548586,0.14929107084274293,0.07464553542137146,0.03527776,0.01763888);
 	static public $defaultScaleList = array(500000000,5000000,1000000,500000,250000,100000,50000,25000,10000,5000,2000,1000,900,800,700,600,500,400,300,200,100,50);
-	
+	static public $aInchesPerUnit = array("m"=>39.3701, "ft"=>12, "inches"=>1,"km"=>39370.1, "mi"=>63360, "dd"=>4374754);
+
 	static private $lang;
 	static private $errors = array();
 	
@@ -198,7 +183,7 @@ class GCAuthor {
 	public static function getErrors() {
 		return self::$errors;
 	}	
-	
+
 	public static function refreshProjectMapfile($project, $publish = false) {
 		require_once ADMIN_PATH."lib/functions.php";
 		require_once ADMIN_PATH.'lib/spyc.php';
@@ -226,7 +211,7 @@ class GCAuthor {
 	
 	public static function refreshMapfiles($project, $publish = false) {
 		require_once ADMIN_PATH."lib/functions.php";
-		require_once ADMIN_PATH.'lib/spyc.php';
+		require_once ADMIN_PATH.'lib/spyc.php';		
 		require_once ADMIN_PATH.'lib/gcFeature.class.php';
 		require_once ADMIN_PATH.'lib/gcMapfile.class.php';
 		require_once ROOT_PATH."lib/i18n.php";
@@ -250,7 +235,7 @@ class GCAuthor {
 	
 	public static function refreshMapfile($project, $mapset, $publish = false) {
 		require_once ADMIN_PATH."lib/functions.php";
-		require_once ADMIN_PATH.'lib/spyc.php';
+		require_once ADMIN_PATH.'lib/spyc.php';		
 		require_once ADMIN_PATH.'lib/gcFeature.class.php';
 		require_once ADMIN_PATH.'lib/gcMapfile.class.php';
 		require_once ROOT_PATH."lib/i18n.php";
@@ -271,123 +256,6 @@ class GCAuthor {
 			}
 		}
 	}
-    
-    public static function buildFeatureQuery($aFeature, array $options = array()) {
-        $defaultOptions = array(
-            'include_1n_relations'=>false, //se true, le relazioni 1-n vengono incluse nella query (se, per esempio, si vuole filtrare su un campo della secondaria)
-            'group_1n'=>true, //se false, vengono inclusi i campi della secondaria, di conseguenza i records non sono più raggruppati per i campi della primaria (se, per esempio, si vogliono visualizzare i dati della secondaria in tabella),
-            'show_relation'=>null, //se voglio visualizzare i dati di una sola secondaria, popolo questo con il nome della relazione da visualizzare
-            'getGeomAs'=>null, // se text, viene usato st_astext, altrimenti nulla (astext serve per le interrogazioni, nulla serve per il mapfile)
-            'srid'=>null //se non null, viene confrontato con lo srid della feature e, se necessario, viene utilizzato st_transform()
-        );
-        $options = array_merge($defaultOptions, $options);
-        
-
-		//$aFeature = $this->aFeature;
-		$layerId=$aFeature["layer_id"];
-		$datalayerTable=$aFeature["data"];	
-		$datalayerGeom=$aFeature["data_geom"];			
-		$datalayerKey=$aFeature["data_unique"];	
-		$datalayerSRID=$aFeature["data_srid"];		
-		$datalayerSchema = $aFeature["table_schema"];
-		$datalayerFilter = $aFeature["data_filter"];
-
-		if(!empty($aFeature["tileindex"])) { //X TILERASTER
-			$location = "'".trim($aFeature["base_path"])."' || location as location";//value for location
-			$table = $aFeature["table_schema"].".".$aFeature["data"];
-			$datalayerTable="(SELECT $datalayerKey as gc_objid,$datalayerGeom as the_geom,$location FROM $table) AS ". DATALAYER_ALIAS_TABLE;
-			return "the_geom from ".$datalayerTable;
-		}
-		elseif(preg_match("|select (.+) from (.+)|i",$datalayerTable))//Definizione alias della tabella o vista pricipale (nel caso l'utente abbia definito una vista)  (da valutare se ha senso)
-			$datalayerTable="($datalayerTable) AS ".DATALAYER_ALIAS_TABLE; 
-		else
-			$datalayerTable=$datalayerSchema.".".$datalayerTable . " AS ".DATALAYER_ALIAS_TABLE; 
-			
-		$joinString = $datalayerTable;
-
-		//Elenco dei campi definiti
-		if($aFeature["fields"]){
-			$fieldList = array();
-            $groupByFieldList = array();
-			
-			foreach($aFeature["fields"] as $idField=>$aField){
-            
-                //se non vogliamo la relazione 1-n nella query (es. WMS) oppure se non vogliamo visualizzare i dati della secondaria ma solo usarli per il filtro (es. interrogazioni su mappa), non mettiamo i campi della secondaria
-                if(!empty($aField['relation']) && ($aFeature["relation"][$aField["relation"]]["relation_type"] == 2)) {
-                    if(!$options['include_1n_relations'] || $options['group_1n']) continue;
-                    else if(!empty($options['show_relation'])) {
-                        //se voglio vedere i dati della secondaria di una sola relazione, escludo i campi delle altre
-                        if($options['show_relation'] != $aFeature['relation'][$aField['relation']]['name']) continue;
-                    }
-                }
-            
-                //field su layer oppure su relazione 1-1
-                if(empty($aField['relation'])) {
-                    $aliasTable = DATALAYER_ALIAS_TABLE;
-                } else {
-                    $aliasTable = GCApp::nameReplace($aFeature["relation"][$aField["relation"]]["name"]);
-                }
-                
-                if(!empty($aField['formula'])) {
-                    $fieldName = $aField["formula"] . " AS " . $aField["field_name"];
-                    $groupByFieldList[] = $aField['field_name'];
-                } else {
-                    $fieldName = $aliasTable . "." . $aField["field_name"];
-                    $groupByFieldList[] = $aliasTable.'.'.$aField['field_name'];
-                }
-                
-                $fieldList[] = $fieldName;
-			}
-			
-			//Elenco delle relazioni
-			if($aRelation=$aFeature["relation"]) {
-				foreach($aRelation as $idrel => $rel){
-					$relationAliasTable = GCApp::nameReplace($rel["name"]);
-					
-					//se relazione 1-n, salta se non vogliamo il join
-                    //se vogliamo i dati della secondaria, elimina il groupBy
-					if($rel["relation_type"] == 2) {
-                        if(!$options['include_1n_relations']) continue;
-                        if(!empty($options['show_relation']) && $rel['name'] != $options['show_relation']) continue;
-                        
-                        if(!$options['group_1n']) {
-                            $groupByFieldList = null;
-                        }
-					}
-
-						
-                    $joinList = array();
-                    foreach($rel['join_field'] as $joinField) {
-                        $joinList[] = DATALAYER_ALIAS_TABLE . '.' . $joinField[0] . ' = ' . $relationAliasTable . '.' . $joinField[1];
-                    }
-
-                    $joinFields = implode(" AND ",$joinList);
-                    $joinString = "$joinString left join ".$rel["table_schema"].".". $rel["table_name"] ." AS ". $relationAliasTable ." ON (".$joinFields.")";
-				}
-				
-			}
-			
-			//$fieldString = implode(",",$fieldList);
-		}
-		
-        $geomField = DATALAYER_ALIAS_TABLE.'.'.$datalayerGeom;
-        if($options['srid'] && $options['srid'] != 'EPSG:'.$aFeature['data_srid']) {
-            $srid = (int)str_replace('EPSG:', '', $options['srid']);
-            $geomField = 'st_transform('.$geomField.', '.$srid.')';
-        }
-        if($options['getGeomAs']) {
-            if($options['getGeomAs'] == 'text') {
-                $geomField = 'st_astext('.$geomField.')';
-            }
-        }
-		$datalayerTable = 'SELECT '.DATALAYER_ALIAS_TABLE.'.'.$datalayerKey.' as gc_objid, '.$geomField.' as gc_geom';
-        if(!empty($fieldList)) $datalayerTable .= ', '.implode(',', $fieldList);
-        $datalayerTable .= ' FROM '.$joinString;
-        if(!empty($groupByFieldList)) $datalayerTable .= ' group by '.DATALAYER_ALIAS_TABLE.'.'.$datalayerKey.', '.DATALAYER_ALIAS_TABLE.'.'.$datalayerGeom.', '. implode(', ', $groupByFieldList);
-		print_debug($datalayerTable,null,'datalayer');
-		return $datalayerTable;
-        
-    }
 	
 	public static function GCTypeFromDbType($dbType) {
 		$typesMap = array(
@@ -468,11 +336,20 @@ class GCAuthor {
 	
 	public static function translate($key) {
 		$lang = self::getLang();
-        if(!empty(self::$translations[$key]) && !empty(self::$translations[$key][$lang])) {
-            return self::$translations[$key][$lang];
-        } else {
-            return $key;
-        }
+		if (isset(self::$translations[$key])) {
+			if (isset(self::$translations[$key][$lang])) {
+				// found localization
+				return self::$translations[$key][$lang];
+			} else {
+				// requested localization not found,
+				// take first localized string
+				$availableLangs = array_keys(self::$translations[$key]);
+				return self::$translations[$key][$availableLangs[0]];
+			}
+		} else {
+			// worst case, return key itself
+			return $key;
+		}
 	}
 	
 	static private $translations = array(
@@ -484,8 +361,8 @@ class GCAuthor {
 		'button_save' => array('it'=>'Salva', 'de'=>'Speichern'),
 		'button_cancel' => array('it'=>'Annulla', 'de'=>'Abbrechen'),
 		'button_publish' => array('it'=>'Pubblica', 'de'=>'Herausgeben'),
-		'button_delete' => array('it'=>'Elimina', 'de'=>'Loschen'),
-		'button_export' => array('it'=>'Esporta', 'de'=>'Export'),
+		'button_delete' => array('it'=>'Elimina', 'de'=>'Löschen'),
+		'button_export' => array('it'=>'Esporta', 'de'=>'Exportieren'),
 		'close' => array('it'=>'Chiudi', 'de'=>'Schließen'),
 		'title'=>array('it'=>'Titolo', 'de'=>'Titel'),
 		'name'=>array('it'=>'Nome', 'de'=>'Name'),
@@ -493,32 +370,36 @@ class GCAuthor {
 		'nodata' => array('it'=>'Nessun Dato Presente', 'de'=>'Keine Daten'),
 		'undefined'=>array('it'=>'Non definito', 'de'=>'Nicht definiert'),
 		'table'=>array('it'=>'Tabella', 'de'=>'Tabelle'),
-		'column'=>array('it'=>'Colonna', 'de'=>'Kolonne'),
+		'column'=>array('it'=>'Colonna', 'de'=>'Spalte'),
 		'field'=>array('it'=>'Campo', 'de'=>'Feld'),
 		'group'=>array('it'=>'Gruppo', 'de'=>'Gruppe'),
-		'pkey'=>array('it'=>'Campo chiave', 'de'=>'Primary Key'),
+		'pkey'=>array('it'=>'Campo chiave', 'de'=>'Primärschlüssel'),
 		'format'=>array('it'=>'Formato', 'de'=>'Format'),
 		'image'=>array('it'=>'Immagine', 'de'=>'Bild'),
 		'symbol'=>array('it'=>'Simbolo', 'de'=>'Symbol'),
 		'category'=>array('it'=>'Categoria', 'de'=>'Art'),
 		'position'=>array('it'=>'Posizione', 'de'=>'Position'),
 		'save_to_temp'=>array('it'=>'Salva in un mapfile temporaneo', 'de'=>'In einem temporären Mapfile abspeichern'),
-		'auto_refresh_mapfiles'=>array('it'=>'Rigenera automaticamente i mapfiles', 'de'=>'Aktualisiere automatisch Mapset'),
+		'auto_refresh_mapfiles'=>array('it'=>'Rigenera automaticamente i mapfiles', 'de'=>'Mapset automatisch aktualisieren'),
 		'save'=>array('it'=>'Salva', 'de'=>'Speichern'),
-		'all'=>array('it'=>'Rigenera tutti', 'de'=>'Alles'),
-		'online_maps'=>array('it'=>'Mappe online', 'de'=>'Mapset aktualisieren'),
+		'all'=>array('it'=>'Tutti', 'de'=>'Alles'),
+		'online_maps'=>array('it'=>'Mappe online', 'de'=>'Online-Karten'),
 		'ogc_services'=>array('it'=>'Servizi OGC', 'de'=>'OGC Dienste'),
 		'update'=>array('it'=>'Aggiorna', 'de'=>'Aktualisieren'),
-		'temporary'=>array('it'=>'temp.', 'de'=>'Temporär'),
-		'public'=>array('it'=>'pubblici', 'de'=>'Öffentlich'),
+		'temporary'=>array('it'=>'temp.', 'de'=>'temporär'),
+		'public'=>array('it'=>'pubblici', 'de'=>'öffentlich'),
 		'theme'=>array('it'=>'Tema', 'de'=>'Thema'),
 		'layergroup'=>array('it'=>'Layergroup', 'de'=>'Layergruppe'),
 		'layer'=>array('it'=>'Layer', 'de'=>'Layer'),
 		'lookup_id'=>array('it'=>'Campo chiave lookup', 'de'=>'Schlüsselfeld in der Nachschlagetabelle'),
 		'lookup_name'=>array('it'=>'Campo descrizione lookup', 'de'=>'Beschreibungsfeld in der Nachschlagetabelle'),
-        'confirm_delete'=>array('it'=>'Sei sicuro di voler eliminare il record?', 'de'=>'Sind Sie sicher, dass sie diesen Eintrag löschen wollen?'),
-        'translations'=>array('it'=>'Traduzioni', 'de'=>'Übersetzungen'),
-        'project'=>array('it'=>'Progetto', 'de'=>'Progetto'),
+		'confirm_delete'=>array('it'=>'Sei sicuro di voler eliminare il record?', 'de'=>'Sind Sie sicher, dass sie diesen Eintrag löschen wollen?'),
+		'translations'=>array('it'=>'Traduzioni', 'de'=>'Übersetzungen'),
+		'List of available Maps'=>array('it'=>'Elenco delle mappe disponibili', 'de'=>'Verfügbare Karten'),
+		'Username'=>array('it'=>'Nome Utente', 'de'=>'Benutzername'),
+		'Password'=>array('it'=>'Password', 'de'=>'Kennwort'),
+		'project'=>array('it'=>'Progetto', 'de'=>'Projekt'),
+		'symbology'=>array('it'=>'Simbologia', 'de'=>'Symbole'),
 	);
 }
 
@@ -551,7 +432,9 @@ class GCUtils {
 		foreach($files as $file) {
 			$isold = (time() - filectime($file)) > 5 * 60 * 60;
 			if (is_file($file) && $isold) {
-				@unlink($file);
+				if (false === unlink($file)) {
+					echo __FILE__.":".__LINE__." Could not remove $file";
+				}
 			}
 		}
     }

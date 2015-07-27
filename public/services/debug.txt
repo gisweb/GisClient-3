@@ -1,0 +1,184 @@
+{"layers":[{"URL":"http:\/\/sit.bonificamarche.it\/\/services\/ows.php","PARAMETERS":{"LAYERS":["osm"],"PROJECT":"bonificamarche","MAP":"consorziobonifica","FORMAT":"image\/png","SRS":"EPSG:3857","TRANSPARENT":"true","SERVICE":"WMS","VERSION":"1.1.1"},"options":{"theme_id":"thm_basi","theme_title":""}},{"URL":"http:\/\/sit.bonificamarche.it\/services\/ows.php","PARAMETERS":{"PROJECT":"bonificamarche","MAP":"consorziobonifica","EXCEPTIONS":"xml","FORMAT":"image\/png","TRANSPARENT":"true","LAYERS":["grp_confini_regionali"],"SERVICE":"WMS","VERSION":"1.1.1","REQUEST":"GetMap","STYLES":"","SRS":"EPSG:3857","OPACITY":"100"},"options":{"theme_id":"thm_piano_di_classifica","theme_title":""}},{"URL":"http:\/\/sit.bonificamarche.it\/services\/ows.php?PROJECT=bonificamarche&MAP=consorziobonifica","PARAMETERS":{"LAYERS":["grp_comprensori"],"FORMAT":"image\/png","SRS":"EPSG:3857","TRANSPARENT":"true","SERVICE":"WMS","VERSION":"1.1.1","OPACITY":"100"},"options":{"theme_id":"thm_piano_di_classifica","theme_title":""}},{"URL":"http:\/\/sit.bonificamarche.it\/services\/ows.php?PROJECT=bonificamarche&MAP=consorziobonifica","PARAMETERS":{"LAYERS":["grp_reticolo_idrografico"],"FORMAT":"image\/png","SRS":"EPSG:3857","TRANSPARENT":"true","SERVICE":"WMS","VERSION":"1.1.1","OPACITY":"100"},"options":{"theme_id":"thm_piano_di_classifica","theme_title":""}},{"URL":"http:\/\/sit.bonificamarche.it\/services\/ows.php?PROJECT=bonificamarche&MAP=consorziobonifica","PARAMETERS":{"LAYERS":["grp_fogli"],"FORMAT":"image\/png","SRS":"EPSG:3857","TRANSPARENT":"true","SERVICE":"WMS","VERSION":"1.1.1","OPACITY":"100"},"options":{"theme_id":"thm_nct","theme_title":""}},{"URL":"http:\/\/sit.bonificamarche.it\/services\/ows.php?PROJECT=bonificamarche&MAP=consorziobonifica","PARAMETERS":{"LAYERS":["grp_fabbricati"],"FORMAT":"image\/png","SRS":"EPSG:3857","TRANSPARENT":"true","SERVICE":"WMS","VERSION":"1.1.1","OPACITY":"100"},"options":{"theme_id":"thm_nct","theme_title":""}},{"URL":"http:\/\/sit.bonificamarche.it\/services\/ows.php?PROJECT=bonificamarche&MAP=consorziobonifica","PARAMETERS":{"LAYERS":["grp_particelle"],"FORMAT":"image\/png","SRS":"EPSG:3857","TRANSPARENT":"true","SERVICE":"WMS","VERSION":"1.1.1","OPACITY":"100"},"options":{"theme_id":"thm_nct","theme_title":""}}],"size":[1524,827],"extent":["1476101","5364002","1476974.125","5364476.5"],"srs":"EPSG:900913","scalebar":true,"save_image":true,"resolution":150,"file_name":"\/apps\/gisclient-3\/public\/services\/tmp\/print\/gc_mapimage_flvk0cd1d9m7jhwjoi2y.png","format":"png","GC_SESSION_ID":"km3kf9sbhdt3253j18aalum2k6"}array (
+  'layers' => 
+  array (
+    0 => 
+    array (
+      'URL' => 'http://sit.bonificamarche.it//services/ows.php',
+      'PARAMETERS' => 
+      array (
+        'LAYERS' => 
+        array (
+          0 => 'osm',
+        ),
+        'PROJECT' => 'bonificamarche',
+        'MAP' => 'consorziobonifica',
+        'FORMAT' => 'image/png',
+        'SRS' => 'EPSG:3857',
+        'TRANSPARENT' => 'true',
+        'SERVICE' => 'WMS',
+        'VERSION' => '1.1.1',
+      ),
+      'options' => 
+      array (
+        'theme_id' => 'thm_basi',
+        'theme_title' => '',
+      ),
+    ),
+    1 => 
+    array (
+      'URL' => 'http://sit.bonificamarche.it/services/ows.php',
+      'PARAMETERS' => 
+      array (
+        'PROJECT' => 'bonificamarche',
+        'MAP' => 'consorziobonifica',
+        'EXCEPTIONS' => 'xml',
+        'FORMAT' => 'image/png',
+        'TRANSPARENT' => 'true',
+        'LAYERS' => 
+        array (
+          0 => 'grp_confini_regionali',
+        ),
+        'SERVICE' => 'WMS',
+        'VERSION' => '1.1.1',
+        'REQUEST' => 'GetMap',
+        'STYLES' => '',
+        'SRS' => 'EPSG:3857',
+        'OPACITY' => '100',
+      ),
+      'options' => 
+      array (
+        'theme_id' => 'thm_piano_di_classifica',
+        'theme_title' => '',
+      ),
+    ),
+    2 => 
+    array (
+      'URL' => 'http://sit.bonificamarche.it/services/ows.php?PROJECT=bonificamarche&MAP=consorziobonifica',
+      'PARAMETERS' => 
+      array (
+        'LAYERS' => 
+        array (
+          0 => 'grp_comprensori',
+        ),
+        'FORMAT' => 'image/png',
+        'SRS' => 'EPSG:3857',
+        'TRANSPARENT' => 'true',
+        'SERVICE' => 'WMS',
+        'VERSION' => '1.1.1',
+        'OPACITY' => '100',
+      ),
+      'options' => 
+      array (
+        'theme_id' => 'thm_piano_di_classifica',
+        'theme_title' => '',
+      ),
+    ),
+    3 => 
+    array (
+      'URL' => 'http://sit.bonificamarche.it/services/ows.php?PROJECT=bonificamarche&MAP=consorziobonifica',
+      'PARAMETERS' => 
+      array (
+        'LAYERS' => 
+        array (
+          0 => 'grp_reticolo_idrografico',
+        ),
+        'FORMAT' => 'image/png',
+        'SRS' => 'EPSG:3857',
+        'TRANSPARENT' => 'true',
+        'SERVICE' => 'WMS',
+        'VERSION' => '1.1.1',
+        'OPACITY' => '100',
+      ),
+      'options' => 
+      array (
+        'theme_id' => 'thm_piano_di_classifica',
+        'theme_title' => '',
+      ),
+    ),
+    4 => 
+    array (
+      'URL' => 'http://sit.bonificamarche.it/services/ows.php?PROJECT=bonificamarche&MAP=consorziobonifica',
+      'PARAMETERS' => 
+      array (
+        'LAYERS' => 
+        array (
+          0 => 'grp_fogli',
+        ),
+        'FORMAT' => 'image/png',
+        'SRS' => 'EPSG:3857',
+        'TRANSPARENT' => 'true',
+        'SERVICE' => 'WMS',
+        'VERSION' => '1.1.1',
+        'OPACITY' => '100',
+      ),
+      'options' => 
+      array (
+        'theme_id' => 'thm_nct',
+        'theme_title' => '',
+      ),
+    ),
+    5 => 
+    array (
+      'URL' => 'http://sit.bonificamarche.it/services/ows.php?PROJECT=bonificamarche&MAP=consorziobonifica',
+      'PARAMETERS' => 
+      array (
+        'LAYERS' => 
+        array (
+          0 => 'grp_fabbricati',
+        ),
+        'FORMAT' => 'image/png',
+        'SRS' => 'EPSG:3857',
+        'TRANSPARENT' => 'true',
+        'SERVICE' => 'WMS',
+        'VERSION' => '1.1.1',
+        'OPACITY' => '100',
+      ),
+      'options' => 
+      array (
+        'theme_id' => 'thm_nct',
+        'theme_title' => '',
+      ),
+    ),
+    6 => 
+    array (
+      'URL' => 'http://sit.bonificamarche.it/services/ows.php?PROJECT=bonificamarche&MAP=consorziobonifica',
+      'PARAMETERS' => 
+      array (
+        'LAYERS' => 
+        array (
+          0 => 'grp_particelle',
+        ),
+        'FORMAT' => 'image/png',
+        'SRS' => 'EPSG:3857',
+        'TRANSPARENT' => 'true',
+        'SERVICE' => 'WMS',
+        'VERSION' => '1.1.1',
+        'OPACITY' => '100',
+      ),
+      'options' => 
+      array (
+        'theme_id' => 'thm_nct',
+        'theme_title' => '',
+      ),
+    ),
+  ),
+  'size' => 
+  array (
+    0 => 1524,
+    1 => 827,
+  ),
+  'extent' => 
+  array (
+    0 => '1476101',
+    1 => '5364002',
+    2 => '1476974.125',
+    3 => '5364476.5',
+  ),
+  'srs' => 'EPSG:3857',
+  'scalebar' => true,
+  'save_image' => true,
+  'resolution' => 150,
+  'file_name' => '/apps/gisclient-3/public/services/tmp/print/gc_mapimage_flvk0cd1d9m7jhwjoi2y.png',
+  'format' => 'png',
+  'GC_SESSION_ID' => 'km3kf9sbhdt3253j18aalum2k6',
+)

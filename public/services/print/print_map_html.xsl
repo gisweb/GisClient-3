@@ -22,13 +22,11 @@
 					</div>
 					<div class="info">
 						<div class="sx">
-                            <xsl:if test="map-date!=''">
-                                <xsl:choose>
-                                    <xsl:when test="//map-lang='de'">Maßstab 1:</xsl:when>
-                                    <xsl:otherwise>Scala 1:</xsl:otherwise>
-                                </xsl:choose>
-                                <xsl:value-of select="map-scale" />
-                            </xsl:if>
+							<xsl:choose>
+                                <xsl:when test="//map-lang='de'">Maßstab 1:</xsl:when>
+                                <xsl:otherwise>Scala 1:</xsl:otherwise>
+                            </xsl:choose>
+                            <xsl:value-of select="map-scale" />
 						</div>
 						<div class="dx">
                             <xsl:if test="map-date!=''">

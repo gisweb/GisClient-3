@@ -7,7 +7,9 @@ $ajax = new GCAjax();
 
 $db = GCApp::getDB();
 
-if(empty($_REQUEST['catalog_id']) || !is_numeric($_REQUEST['catalog_id']) || $_REQUEST['catalog_id'] < 1) $ajax->error('catalog_id');
+if(empty($_REQUEST['catalog_id']) || !is_numeric($_REQUEST['catalog_id']) || $_REQUEST['catalog_id'] < 1) {
+	$ajax->error('catalog_id');
+}
 $catalogId = $_REQUEST['catalog_id'];
 
 $layerTypeId = null;
@@ -39,7 +41,7 @@ switch($catalogData["connection_type"]){
             } else {
                 $projectPath = addFinalSlash(ROOT_PATH);
             }
-			$baseDir = $projectPath.$baseDir;	
+			$baseDir = $projectPath.$baseDir;
 		}
 		$navDir = '';
 		if(!empty($_REQUEST['directory'])) { // siamo in una sottocartella, includi anche il back
@@ -49,7 +51,7 @@ switch($catalogData["connection_type"]){
 			$n++;
 		}
 		$sourceDir = $baseDir . $navDir;
-
+		
 		$directories = elenco_dir($sourceDir);
 		sort($directories);
 		foreach($directories as $directory) {
@@ -57,7 +59,7 @@ switch($catalogData["connection_type"]){
 			$result['data_objects'][$n] = array('directory'=>$navDir.addFinalSlash($directory));
 			$n++;
 		}
-
+		
 		$allowedExtensions = explode(",",strtolower(CATALOG_EXT));
 		foreach($allowedExtensions as $extension){
 			$files = elenco_file($sourceDir, $extension);
@@ -133,8 +135,11 @@ switch($catalogData["connection_type"]){
 				$result['data'][$n] = array('pkey'=>$row['column_name']);
 				$result['data_objects'][$n] = array(
 					'data_unique' => $row['column_name'],
-					'data_extent' => implode(' ', $extent)
 				);
+                                // add data_extent only when requested
+                                if (isset($_REQUEST['data_extent'])) {
+                                    $result['data_objects'][$n]['data_extent'] = implode(' ', $extent);
+                                }
 				$n++;
 			}
 		}
