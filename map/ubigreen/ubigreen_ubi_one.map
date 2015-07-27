@@ -1,0 +1,673 @@
+MAP
+NAME "ubigreen_ubi_one"
+SIZE 256 256	
+MAXSIZE 20000
+RESOLUTION 90.714
+FONTSET ../../fonts/fonts.list
+CONFIG 'PROJ_LIB' '/usr/share/proj'
+WEB
+	METADATA
+        # for mapserver 6.0
+        "wms_enable_request" "*"
+        "ows_enable_request" "*"
+		"project_name"	"ubigreen"
+		"ows_title"	"ubigreen_ubi_one"
+	
+		"wfs_encoding"	"UTF-8"
+		"wms_encoding"	"UTF-8"
+
+    	"wms_onlineresource" "http://ubigreen.vmmamo/cgi-bin/mapserv?map=/apps/gisclient-3/map/ubigreen/ubigreen_ubi_one.map"
+    	"wfs_onlineresource" "http://ubigreen.vmmamo/cgi-bin/mapserv?map=/apps/gisclient-3/map/ubigreen/ubigreen_ubi_one.map"
+		"wms_feature_info_mime_type"	"text/html"
+		"wfs_namespace_prefix"	"feature"
+		"wms_srs"	"EPSG:3857 EPSG:32632 EPSG:4326"
+	
+
+	END
+	IMAGEPATH "/apps/gisclient-3/tmp/ms_tmp/"
+	IMAGEURL "/tmp/"	
+END	
+PROJECTION
+	"init=epsg:3857"
+END
+EXTENT 739316.2 5387525.39 1427445.99 6075655.19
+LAYER
+	GROUP "grp_primo_livello"
+	NAME "grp_primo_livello.lay_primo_livello"
+	TYPE POLYGON
+	STATUS OFF
+	METADATA
+		"wms_group_title" ""
+		"ows_title"	"Elementi di primo livello della RER"
+		"wms_title"	"Elementi di primo livello della RER"
+	
+	END
+	PROJECTION
+		"init=epsg:32632"
+	END
+	CONNECTIONTYPE POSTGIS
+	CONNECTION "user=mapserver password=mapserver dbname=ubigreen host=127.0.0.1 port=5433"
+	DATA "gc_geom FROM (SELECT __data__.gid as gc_objid,__data__.geom as gc_geom, * FROM rer.primo_livello AS __data__ ) AS foo USING UNIQUE gc_objid USING SRID=32632"
+	PROCESSING "CLOSE_CONNECTION=DEFER"
+	EXTENT 465209.8826 4947434.60329946 691621.994600875 5165401.75009947
+	SIZEUNITS pixels
+	OPACITY 70
+	CLASS
+		NAME "cls_primo_livello_rer"
+		TITLE "ementi di primo livello della RER"
+		STYLE
+			COLOR 128 255 128
+			WIDTH 1
+		END
+	END
+	END
+LAYER
+	GROUP "grp_secondo_livello"
+	NAME "grp_secondo_livello.lay_secondo_livello"
+	TYPE POLYGON
+	STATUS OFF
+	METADATA
+		"wms_group_title" ""
+		"ows_title"	"Elementi di secodno livello della RER"
+		"wms_title"	"Elementi di secodno livello della RER"
+	
+	END
+	PROJECTION
+		"init=epsg:32632"
+	END
+	CONNECTIONTYPE POSTGIS
+	CONNECTION "user=mapserver password=mapserver dbname=ubigreen host=127.0.0.1 port=5433"
+	DATA "gc_geom FROM (SELECT __data__.gid as gc_objid,__data__.geom as gc_geom, * FROM rer.secondo_livello AS __data__ ) AS foo USING UNIQUE gc_objid USING SRID=32632"
+	PROCESSING "CLOSE_CONNECTION=DEFER"
+	SIZEUNITS pixels
+	OPACITY 70
+	CLASS
+		NAME "cls_secondo_livello_rer"
+		TITLE "elementi di secondo livello della RER"
+		STYLE
+			COLOR 192 255 255
+			WIDTH 1
+		END
+	END
+	END
+LAYER
+	GROUP "grp_corridoi_alta"
+	NAME "grp_corridoi_alta.lay_corridoi_alta"
+	TYPE POLYGON
+	STATUS OFF
+	METADATA
+		"wms_group_title" ""
+		"ows_title"	"Corridoi regionali primari ad alta antropizazione"
+		"wms_title"	"Corridoi regionali primari ad alta antropizazione"
+	
+	END
+	PROJECTION
+		"init=epsg:32632"
+	END
+	CONNECTIONTYPE POSTGIS
+	CONNECTION "user=mapserver password=mapserver dbname=ubigreen host=127.0.0.1 port=5433"
+	DATA "gc_geom FROM (SELECT __data__.gid as gc_objid,__data__.geom as gc_geom, * FROM rer.corridoi_alta AS __data__ ) AS foo USING UNIQUE gc_objid USING SRID=32632"
+	PROCESSING "CLOSE_CONNECTION=DEFER"
+	SIZEUNITS pixels
+	OPACITY 100
+	CLASS
+		NAME "cls_corridoi_alta"
+		TITLE "Corridoi regionali primari ad alta antropizazione"
+		STYLE
+			OUTLINECOLOR 255 0 0
+			WIDTH 3
+			MINWIDTH 3
+		END
+	END
+	END
+LAYER
+	GROUP "grp_corridoi_bassa"
+	NAME "grp_corridoi_bassa.lay_corridoi_bassa"
+	TYPE POLYGON
+	STATUS OFF
+	METADATA
+		"wms_group_title" ""
+		"ows_title"	"Corridoi regionali a bassa o moderata antropizzazione"
+		"wms_title"	"Corridoi regionali a bassa o moderata antropizzazione"
+	
+	END
+	PROJECTION
+		"init=epsg:32632"
+	END
+	CONNECTIONTYPE POSTGIS
+	CONNECTION "user=mapserver password=mapserver dbname=ubigreen host=127.0.0.1 port=5433"
+	DATA "gc_geom FROM (SELECT __data__.gid as gc_objid,__data__.geom as gc_geom, * FROM rer.corridoi_bassa AS __data__ ) AS foo USING UNIQUE gc_objid USING SRID=32632"
+	PROCESSING "CLOSE_CONNECTION=DEFER"
+	SIZEUNITS pixels
+	OPACITY 100
+	CLASS
+		NAME "cls_corridoi_bassa"
+		TITLE "Corridoi regionali a bassa o moderata antropizzazione"
+		STYLE
+			OUTLINECOLOR 255 127 0
+			WIDTH 3
+			MINWIDTH 3
+		END
+	END
+	END
+LAYER
+	GROUP "grp_varchi"
+	NAME "grp_varchi.lay_varchi"
+	TYPE LINE
+	STATUS OFF
+	METADATA
+		"wms_group_title" ""
+		"ows_title"	"Varchi della RER"
+		"wms_title"	"Varchi della RER"
+	
+	END
+	PROJECTION
+		"init=epsg:32632"
+	END
+	CONNECTIONTYPE POSTGIS
+	CONNECTION "user=mapserver password=mapserver dbname=ubigreen host=127.0.0.1 port=5433"
+	DATA "gc_geom FROM (SELECT __data__.gid as gc_objid,__data__.geom as gc_geom, __data__.tipo FROM rer.varchi AS __data__ ) AS foo USING UNIQUE gc_objid USING SRID=32632"
+	PROCESSING "CLOSE_CONNECTION=DEFER"
+	EXTENT 464543.761199999 4961383.97999946 672385.628900505 5148185.43239946
+	SIZEUNITS pixels
+	OPACITY 100
+	CLASSITEM "tipo"
+	CLASS
+		NAME "cls_varco"
+		TITLE "varco da tenere e deframmentare"
+		EXPRESSION /entrambi/
+		STYLE
+			COLOR 64 0 0
+			WIDTH 5
+			MINWIDTH 5
+		END
+	END
+	CLASS
+		NAME "cls_varchi_defr"
+		TITLE "varco da deframmentare"
+		EXPRESSION /deframmentare/
+		STYLE
+			COLOR 255 255 0
+			WIDTH 5
+			MINWIDTH 5
+		END
+	END
+	CLASS
+		NAME "varchi_tenere"
+		TITLE "varco da tenere"
+		EXPRESSION /varco da tenere/
+		STYLE
+			COLOR 255 64 255
+			WIDTH 5
+			MINWIDTH 5
+		END
+	END
+	END
+LAYER
+	GROUP "grp_monum_nat"
+	NAME "grp_monum_nat.lay_monum_nat_p"
+	TYPE POINT
+	STATUS OFF
+	METADATA
+		"wms_group_title" ""
+		"ows_title"	"Monumenti naturali (punti)"
+		"wms_title"	"Monumenti naturali (punti)"
+		"gml_geometries"	"geom"
+		"ows_onlineresource"	""
+		"gml_featureid"	"gc_objid"
+		"ows_include_items"	"note_mn"
+		"gml_include_items"	"note_mn"
+		"gml_geom_type"	"point"
+		"gml_note_mn_type"	"Character"
+	
+	END
+	PROJECTION
+		"init=epsg:32632"
+	END
+	CONNECTIONTYPE POSTGIS
+	CONNECTION "user=mapserver password=mapserver dbname=ubigreen host=127.0.0.1 port=5433"
+	DATA "gc_geom FROM (SELECT __data__.gid as gc_objid,__data__.geom as gc_geom, __data__.note_mn FROM aree_protette.monum_nat_p AS __data__ ) AS foo USING UNIQUE gc_objid USING SRID=32632"
+	PROCESSING "CLOSE_CONNECTION=DEFER"
+	DUMP TRUE
+	EXTENT 467781.6572 5054022.48169946 616886.715500068 5086505.23459946
+	SIZEUNITS pixels
+	OPACITY 100
+	CLASS
+		NAME "cls_monum_nat_p"
+		TITLE "Monumenti naturali (punti)"
+		STYLE
+			COLOR 128 0 0
+			SIZE 8
+			MINSIZE 5
+			MAXSIZE 12
+			WIDTH 1
+		END
+	END
+	END
+LAYER
+	GROUP "grp_riserve"
+	NAME "grp_riserve.lay_riserve"
+	TYPE POLYGON
+	STATUS OFF
+	METADATA
+		"wms_group_title" ""
+		"ows_title"	"Riserve naturali"
+		"wms_title"	"Riserve naturali"
+		"gml_geometries"	"geom"
+		"ows_onlineresource"	""
+		"gml_featureid"	"gc_objid"
+		"ows_include_items"	"nome_ente"
+		"gml_include_items"	"nome_ente"
+		"gml_geom_type"	"multipolygon"
+		"gml_nome_ente_type"	"Character"
+	
+	END
+	PROJECTION
+		"init=epsg:32632"
+	END
+	CONNECTIONTYPE POSTGIS
+	CONNECTION "user=mapserver password=mapserver dbname=ubigreen host=127.0.0.1 port=5433"
+	DATA "gc_geom FROM (SELECT __data__.gid as gc_objid,__data__.geom as gc_geom, __data__.nome_ente FROM aree_protette.riserve_nat AS __data__ ) AS foo USING UNIQUE gc_objid USING SRID=32632"
+	PROCESSING "CLOSE_CONNECTION=DEFER"
+	DUMP TRUE
+	EXTENT 462658.5427 4961089.27519946 677477.799900588 5148405.64129945
+	SIZEUNITS pixels
+	MAXSCALEDENOM 10000000
+	MINSCALEDENOM 1
+	OPACITY 100
+	CLASS
+		NAME "cls_riserve"
+		TITLE "Riserve naturali"
+		STYLE
+			OUTLINECOLOR 128 0 0
+			WIDTH 1
+		END
+		STYLE
+			COLOR 128 0 0
+			SYMBOL "4_QUADRATI"
+			OUTLINECOLOR 128 0 0
+			SIZE 8
+			MINSIZE 8
+			MAXSIZE 8
+			WIDTH 1
+			MINWIDTH 1
+		END
+	END
+	END
+LAYER
+	GROUP "grp_parchi_reg"
+	NAME "grp_parchi_reg.lay_parchi_reg"
+	TYPE POLYGON
+	STATUS OFF
+	METADATA
+		"wms_group_title" ""
+		"ows_title"	"Parchi regionali"
+		"wms_title"	"Parchi regionali"
+		"gml_geometries"	"geom"
+		"ows_onlineresource"	""
+		"gml_featureid"	"gc_objid"
+		"ows_include_items"	"nome_pa"
+		"gml_include_items"	"nome_pa"
+		"gml_geom_type"	"multipolygon"
+		"gml_nome_pa_type"	"Character"
+	
+	END
+	PROJECTION
+		"init=epsg:32632"
+	END
+	CONNECTIONTYPE POSTGIS
+	CONNECTION "user=mapserver password=mapserver dbname=ubigreen host=127.0.0.1 port=5433"
+	DATA "gc_geom FROM (SELECT __data__.gid as gc_objid,__data__.geom as gc_geom, __data__.nome_pa FROM aree_protette.parchi_reg_naz AS __data__ ) AS foo USING UNIQUE gc_objid USING SRID=32632"
+	PROCESSING "CLOSE_CONNECTION=DEFER"
+	DUMP TRUE
+	EXTENT 467416.530899999 4985400.89219941 656453.041300305 5165401.75009947
+	SIZEUNITS pixels
+	MAXSCALEDENOM 10000000
+	MINSCALEDENOM 1
+	OPACITY 100
+	CLASS
+		NAME "cls_perimetro_parchi_reg"
+		TITLE "Parchi regionali"
+		STYLE
+			OUTLINECOLOR 0 128 0
+			WIDTH 1
+		END
+		STYLE
+			COLOR 0 128 0
+			SYMBOL "PAT_/"
+			OUTLINECOLOR 0 128 0
+			SIZE 6
+			MINSIZE 6
+			MAXSIZE 6
+			ANGLE 135
+			WIDTH 1
+			MINWIDTH 1
+		END
+	END
+	END
+LAYER
+	GROUP "grp_parc_nat"
+	NAME "grp_parc_nat.lay_parchi_nat"
+	TYPE POLYGON
+	STATUS OFF
+	METADATA
+		"wms_group_title" ""
+		"ows_title"	"Parchi naturali"
+		"wms_title"	"Parchi naturali"
+		"gml_geometries"	"geom"
+		"ows_onlineresource"	""
+		"gml_featureid"	"gc_objid"
+		"ows_include_items"	"nome_pan"
+		"gml_include_items"	"nome_pan"
+		"gml_geom_type"	"multipolygon"
+		"gml_nome_pan_type"	"Character"
+	
+	END
+	PROJECTION
+		"init=epsg:32632"
+	END
+	CONNECTIONTYPE POSTGIS
+	CONNECTION "user=mapserver password=mapserver dbname=ubigreen host=127.0.0.1 port=5433"
+	DATA "gc_geom FROM (SELECT __data__.gid as gc_objid,__data__.geom as gc_geom, __data__.nome_pan FROM aree_protette.parchi_nat AS __data__ ) AS foo USING UNIQUE gc_objid USING SRID=32632"
+	PROCESSING "CLOSE_CONNECTION=DEFER"
+	DUMP TRUE
+	EXTENT 467416.5314 4996967.75969946 633499.064400134 5123832.98164944
+	SIZEUNITS pixels
+	MAXSCALEDENOM 10000000
+	MINSCALEDENOM 1
+	OPACITY 70
+	CLASS
+		NAME "cls_perimetro_parchi_nat"
+		TITLE "Parchi naturali"
+		STYLE
+			OUTLINECOLOR 0 128 0
+			WIDTH 1
+		END
+		STYLE
+			COLOR 0 128 0
+			OUTLINECOLOR 0 128 0
+			SIZE 6
+			MINSIZE 6
+			MAXSIZE 6
+			ANGLE 135
+			WIDTH 1
+			MINWIDTH 1
+		END
+	END
+	END
+LAYER
+	GROUP "grp_parchi_loc"
+	NAME "grp_parchi_loc.lay_parchi_loc"
+	TYPE POLYGON
+	STATUS OFF
+	METADATA
+		"wms_group_title" ""
+		"ows_title"	"perimetro parco"
+		"wms_title"	"perimetro parco"
+		"gml_geometries"	"geom"
+		"ows_onlineresource"	""
+		"gml_featureid"	"gc_objid"
+		"ows_include_items"	"nome_plis"
+		"gml_include_items"	"nome_plis"
+		"gml_geom_type"	"multipolygon"
+		"gml_nome_plis_type"	"Character"
+	
+	END
+	PROJECTION
+		"init=epsg:32632"
+	END
+	CONNECTIONTYPE POSTGIS
+	CONNECTION "user=mapserver password=mapserver dbname=ubigreen host=127.0.0.1 port=5433"
+	DATA "gc_geom FROM (SELECT __data__.gid as gc_objid,__data__.geom as gc_geom, __data__.nome_plis FROM aree_protette.parchi_local AS __data__ ) AS foo USING UNIQUE gc_objid USING SRID=32632"
+	PROCESSING "CLOSE_CONNECTION=DEFER"
+	DUMP TRUE
+	EXTENT 465285.8937 4968286.79979946 683285.039600695 5127846.41639946
+	SIZEUNITS pixels
+	MAXSCALEDENOM 10000000
+	MINSCALEDENOM 1
+	OPACITY 100
+	CLASS
+		NAME "cls_perimetro_parchi_loc"
+		TITLE "perimetro parchi locali"
+		STYLE
+			OUTLINECOLOR 64 255 255
+			WIDTH 1
+		END
+		STYLE
+			COLOR 64 255 255
+			SYMBOL "PAT_/"
+			OUTLINECOLOR 64 255 255
+			SIZE 4
+			MINSIZE 4
+			MAXSIZE 4
+			ANGLE 135
+			WIDTH 1
+			MINWIDTH 1
+		END
+	END
+	END
+LAYER
+	GROUP "grp_sic"
+	NAME "grp_sic.lay_sic"
+	TYPE POLYGON
+	STATUS OFF
+	METADATA
+		"wms_group_title" ""
+		"ows_title"	"Siti di interesse comunitario"
+		"wms_title"	"Siti di interesse comunitario"
+		"gml_geometries"	"geom"
+		"ows_onlineresource"	""
+		"gml_featureid"	"gc_objid"
+		"ows_include_items"	"nome_sic,dtipo_sito"
+		"gml_include_items"	"nome_sic,dtipo_sito"
+		"gml_geom_type"	"multipolygon"
+		"gml_nome_sic_type"	"Character"
+		"gml_dtipo_sito_type"	"Character"
+	
+	END
+	PROJECTION
+		"init=epsg:32632"
+	END
+	CONNECTIONTYPE POSTGIS
+	CONNECTION "user=mapserver password=mapserver dbname=ubigreen host=127.0.0.1 port=5433"
+	DATA "gc_geom FROM (SELECT __data__.gid as gc_objid,__data__.geom as gc_geom, __data__.nome_sic,__data__.dtipo_sito FROM aree_protette.sic AS __data__ ) AS foo USING UNIQUE gc_objid USING SRID=32632"
+	PROCESSING "CLOSE_CONNECTION=DEFER"
+	DUMP TRUE
+	EXTENT 467117.4478 4961081.48389946 677506.976800588 5161213.02669947
+	SIZEUNITS pixels
+	MAXSCALEDENOM 10000000
+	MINSCALEDENOM 1
+	OPACITY 100
+	CLASS
+		NAME "cls_sic"
+		TITLE "Siti di interesse comunitario"
+		STYLE
+			OUTLINECOLOR 128 128 255
+			WIDTH 1
+		END
+		STYLE
+			COLOR 128 128 255
+			SYMBOL "PAT_/"
+			OUTLINECOLOR 128 128 255
+			SIZE 6
+			MINSIZE 6
+			MAXSIZE 6
+			WIDTH 1
+			MINWIDTH 1
+		END
+	END
+	END
+LAYER
+	GROUP "grp_zps"
+	NAME "grp_zps.lay_zps"
+	TYPE POLYGON
+	STATUS OFF
+	METADATA
+		"wms_group_title" ""
+		"ows_title"	"Zone di protezione speciale"
+		"wms_title"	"Zone di protezione speciale"
+		"gml_geometries"	"geom"
+		"ows_onlineresource"	""
+		"gml_featureid"	"gc_objid"
+		"ows_include_items"	"nome_zps,dtipo_sito"
+		"gml_include_items"	"nome_zps,dtipo_sito"
+		"gml_geom_type"	"multipolygon"
+		"gml_nome_zps_type"	"Character"
+		"gml_dtipo_sito_type"	"Character"
+	
+	END
+	PROJECTION
+		"init=epsg:32632"
+	END
+	CONNECTIONTYPE POSTGIS
+	CONNECTION "user=mapserver password=mapserver dbname=ubigreen host=127.0.0.1 port=5433"
+	DATA "gc_geom FROM (SELECT __data__.gid as gc_objid,__data__.geom as gc_geom, __data__.nome_zps,__data__.dtipo_sito FROM aree_protette.zone_prot_spec AS __data__ ) AS foo USING UNIQUE gc_objid USING SRID=32632"
+	PROCESSING "CLOSE_CONNECTION=DEFER"
+	DUMP TRUE
+	EXTENT 462497.2788 4974185.66619943 677506.976800588 5165401.75009947
+	SIZEUNITS pixels
+	MAXSCALEDENOM 10000000
+	MINSCALEDENOM 1
+	OPACITY 100
+	CLASS
+		NAME "cls_sic"
+		TITLE "Siti di interesse comunitario"
+		STYLE
+			OUTLINECOLOR 128 128 255
+			WIDTH 1
+		END
+		STYLE
+			COLOR 128 128 255
+			SYMBOL "PAT_/"
+			OUTLINECOLOR 128 128 255
+			SIZE 6
+			MINSIZE 6
+			MAXSIZE 6
+			ANGLE 90
+			WIDTH 1
+			MINWIDTH 1
+		END
+	END
+	END
+LAYER
+	GROUP "grp_monum_nat"
+	NAME "grp_monum_nat.lay_monum_nat_plg"
+	TYPE POLYGON
+	STATUS OFF
+	METADATA
+		"wms_group_title" ""
+		"ows_title"	"monumenti naturali (aree)"
+		"wms_title"	"monumenti naturali (aree)"
+		"gml_geometries"	"geom"
+		"ows_onlineresource"	""
+		"gml_featureid"	"gc_objid"
+		"ows_include_items"	"nome_mn"
+		"gml_include_items"	"nome_mn"
+		"gml_geom_type"	"multipolygon"
+		"gml_nome_mn_type"	"Character"
+	
+	END
+	PROJECTION
+		"init=epsg:32632"
+	END
+	CONNECTIONTYPE POSTGIS
+	CONNECTION "user=mapserver password=mapserver dbname=ubigreen host=127.0.0.1 port=5433"
+	DATA "gc_geom FROM (SELECT __data__.gid as gc_objid,__data__.geom as gc_geom, __data__.nome_mn FROM aree_protette.monum_nat_plg AS __data__ ) AS foo USING UNIQUE gc_objid USING SRID=32632"
+	PROCESSING "CLOSE_CONNECTION=DEFER"
+	DUMP TRUE
+	EXTENT 467416.5314 4996967.75969946 633499.064400134 5123832.98164944
+	SIZEUNITS pixels
+	MAXSCALEDENOM 10000000
+	MINSCALEDENOM 1
+	OPACITY 100
+	CLASS
+		NAME "cls_perimetro_monumenti_nat_plg"
+		TITLE "monumenti naturali (aree)"
+		STYLE
+			OUTLINECOLOR 128 0 0
+			WIDTH 1
+		END
+		STYLE
+			COLOR 128 0 0
+			SYMBOL "PAT_/"
+			OUTLINECOLOR 128 0 0
+			SIZE 4
+			MINSIZE 4
+			MAXSIZE 4
+			ANGLE 135
+			WIDTH 1
+			MINWIDTH 1
+		END
+	END
+	END
+###### SYMBOLS #######
+SYMBOL
+	NAME "4_QUADRATI"
+TYPE VECTOR
+POINTS
+0 0
+1 0
+1 1
+0 1
+0 0
+-99 -99
+2 0
+3 0
+3 1
+2 1
+2 0
+-99 -99
+0 2
+1 2
+1 3
+0 3
+0 2
+-99 -99
+2 2
+3 2
+3 3
+2 3
+2 2
+END
+END
+SYMBOL
+	NAME "PAT_/"
+TYPE VECTOR
+POINTS
+0 1
+1 0
+END
+END
+LEGEND
+    STATUS ON
+    OUTLINECOLOR 0 0 0 
+    KEYSIZE 36 24
+    LABEL
+       TYPE TRUETYPE
+       FONT 'arial'
+       SIZE 8
+       COLOR 0 0 0
+    END
+END
+
+OUTPUTFORMAT	
+	NAME "AGG PNG 8 bit"
+	DRIVER "AGG/PNG"
+	MIMETYPE "image/png"
+	IMAGEMODE RGB
+	EXTENSION "png"
+	FORMATOPTION "INTERLACE=OFF"
+    FORMATOPTION "QUANTIZE_FORCE=ON"
+    FORMATOPTION "QUANTIZE_DITHER=OFF"
+    FORMATOPTION "QUANTIZE_COLORS=256"
+END
+OUTPUTFORMAT	
+	NAME "AGG PNG"
+	DRIVER "AGG/PNG"
+	MIMETYPE "image/png"
+	IMAGEMODE RGBA
+	EXTENSION "png"
+	FORMATOPTION "INTERLACE=OFF"
+END
+
+END #MAP

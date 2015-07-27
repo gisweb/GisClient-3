@@ -1,0 +1,159 @@
+---
+services:
+ tms:
+  srs:
+   - EPSG:3857
+   - EPSG:32632
+   - EPSG:4326
+  use_grid_names: false
+  origin: nw
+ kml:
+  use_grid_names: false
+ wmts:
+  srs:
+   - EPSG:3857
+   - EPSG:32632
+   - EPSG:4326
+ wms:
+  srs:
+   - EPSG:3857
+   - EPSG:32632
+   - EPSG:4326
+  md:
+   title: 'Servizio OWS Ubigreen - Fondazione Cariplo'
+   abstract: 'Servizio OWS Ubigreen - Fondazione Cariplo'
+   online_resource: 'http://ubigreen.vmmamo/cgi-bin/mapserv??project=ubigreen&amp;map=ubigreen_ows'
+   contact:
+    person: Roberto
+   access_constraints: None
+   fees: None
+ demo:
+  name: ubigreen_ows
+sources:
+ mapserver_wms_source:
+  type: wms
+  supported_srs:
+   - EPSG:3857
+   - EPSG:32632
+   - EPSG:4326
+  req:
+   url: http://ubigreen.vmmamo/cgi-bin/mapserv
+   map: /apps/gisclient-3/map/ubigreen/ubigreen_ows.map
+   format: image/png
+   transparent: true
+   exceptions: inimage
+  coverage:
+   bbox:
+    - 6.635805
+    - 42.598524
+    - 12.828551
+    - 48.79127
+   srs: EPSG:4326
+  image:
+   transparent_color: '#ffffff'
+   transparent_color_tolerance: 0
+ mapserver_source:
+  type: mapserver
+  req:
+   transparent: true
+   map: /apps/gisclient-3/map/ubigreen/ubigreen_ows.map
+   exceptions: inimage
+  coverage:
+   bbox:
+    - 6.635805
+    - 42.598524
+    - 12.828551
+    - 48.79127
+   srs: EPSG:4326
+  image:
+   transparent_color: '#ffffff'
+   transparent_color_tolerance: 0
+  mapserver:
+   binary: /usr/lib/cgi-bin/mapserv
+   working_dir: /apps/gisclient-3/map/ubigreen
+globals:
+ srs:
+  proj_data_dir: /usr/share/proj
+ cache:
+  type: mbtiles
+  base_dir: /data/tiles/ubigreen/
+  lock_dir: /data/tiles/locks/
+  tile_lock_dir: /data/tiles/tile_locks/
+grids:
+ epsg3857:
+  base: GLOBAL_WEBMERCATOR
+  srs: EPSG:3857
+  num_levels: 20
+ epsg32632:
+  srs: EPSG:32632
+  res:
+   - 560
+   - 280
+   - 140
+   - 70
+   - 56
+   - 28
+   - 14
+   - 7
+   - 2.8
+   - 1.4
+   - 0.56
+   - 0.28
+   - 0.14
+   - 0.07
+  bbox:
+   - 413645
+   - 4917050
+   - 700365
+   - 5203770
+  bbox_srs: EPSG:32632
+ epsg4326:
+  srs: EPSG:4326
+  res:
+   - 0.0050396693
+   - 0.0025198347
+   - 0.0012599173
+   - 0.0006299587
+   - 0.0005039669
+   - 0.0002519835
+   - 0.0001259917
+   - 6.29959E-5
+   - 2.51983E-5
+   - 1.25992E-5
+   - 5.0397E-6
+   - 2.5198E-6
+   - 1.2599E-6
+   - 6.3E-7
+  bbox:
+   - 8.7321779533
+   - 44.6948967543
+   - 10.7321779533
+   - 46.6948967543
+  bbox_srs: EPSG:4326
+caches:
+ ubigreen_ows_cache:
+  sources:
+   - mapserver_source:grp_plone_data
+  minimize_meta_requests: true
+  cache:
+   type: mbtiles
+   filename: ubigreen_ows.mbtiles
+  grids:
+   - epsg3857
+   - epsg32632
+   - epsg4326
+layers:
+ - 
+  name: thm_progetti
+  title: Progetti finanziati
+  layers:
+   - 
+    name: grp_plone_data
+    title: Progetti finanziati
+    sources:
+     - mapserver_source:grp_plone_data
+ - 
+  name: ubigreen_ows_tiles
+  title: ubigreen_ows_tiles
+  sources:
+   - ubigreen_ows_cache

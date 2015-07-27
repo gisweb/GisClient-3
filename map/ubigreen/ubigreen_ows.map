@@ -1,0 +1,199 @@
+MAP
+NAME "ubigreen_ows"
+SIZE 256 256	
+MAXSIZE 20000
+RESOLUTION 90.714
+FONTSET ../../fonts/fonts.list
+CONFIG 'PROJ_LIB' '/usr/share/proj'
+WEB
+	METADATA
+        # for mapserver 6.0
+        "wms_enable_request" "*"
+        "ows_enable_request" "*"
+		"project_name"	"ubigreen"
+		"ows_title"	"ubigreen_ows"
+	
+		"wfs_encoding"	"UTF-8"
+		"wms_encoding"	"UTF-8"
+
+    	"wms_onlineresource" "http://ubigreen.vmmamo/cgi-bin/mapserv?map=/apps/gisclient-3/map/ubigreen/ubigreen_ows.map"
+    	"wfs_onlineresource" "http://ubigreen.vmmamo/cgi-bin/mapserv?map=/apps/gisclient-3/map/ubigreen/ubigreen_ows.map"
+		"wms_feature_info_mime_type"	"text/html"
+		"wfs_namespace_prefix"	"feature"
+		"wms_srs"	"EPSG:3857 EPSG:32632 EPSG:4326"
+	
+
+	END
+	IMAGEPATH "/apps/gisclient-3/tmp/ms_tmp/"
+	IMAGEURL "/tmp/"	
+END	
+PROJECTION
+	"init=epsg:4326"
+END
+EXTENT 6.635805 42.598524 12.828551 48.79127
+LAYER
+	GROUP "grp_plone_data"
+	NAME "grp_plone_data.lay_plone_data_plg"
+	TYPE POLYGON
+	STATUS OFF
+	METADATA
+		"wms_group_title" ""
+		"ows_title"	"Elementi geometrici (areali)"
+		"wms_title"	"Elementi geometrici (areali)"
+		"gml_geometries"	"the_geom"
+		"ows_onlineresource"	""
+		"gml_featureid"	"gc_objid"
+		"ows_include_items"	"id,titolo_progetto_po,anno_bando,url"
+		"gml_include_items"	"id,titolo_progetto_po,anno_bando,url"
+		"gml_the_geom_type"	"Polygon"
+		"gml_id_type"	"Character"
+		"gml_titolo_progetto_po_type"	"Character"
+		"gml_anno_bando_type"	"Character"
+		"gml_url_type"	"Character"
+	
+	END
+	PROJECTION
+		"init=epsg:4326"
+	END
+	CONNECTIONTYPE POSTGIS
+	CONNECTION "user=mapserver password=mapserver dbname=ubigreen host=127.0.0.1 port=5433"
+	DATA "gc_geom FROM (SELECT __data__.gid as gc_objid,__data__.the_geom as gc_geom, __data__.id,__data__.titolo_progetto_po,__data__.anno_bando,__data__.url FROM plone_data.projects_geometries AS __data__ ) AS foo USING UNIQUE gc_objid USING SRID=4326"
+	FILTER "geometrytype(gc_geom)='POLYGON'"
+	PROCESSING "CLOSE_CONNECTION=DEFER"
+	DUMP TRUE
+	EXTENT -179.97327 44.916 179.99995 90
+	SIZEUNITS pixels
+	CLASS
+		NAME "cls_geom_plg"
+		TITLE "elementi areali"
+		STYLE
+			COLOR 0 192 0
+			WIDTH 1
+		END
+	END
+	END
+LAYER
+	GROUP "grp_plone_data"
+	NAME "grp_plone_data.lay_plone_data_line"
+	TYPE LINE
+	STATUS OFF
+	METADATA
+		"wms_group_title" ""
+		"ows_title"	"Elementi geometrici (lineari)"
+		"wms_title"	"Elementi geometrici (lineari)"
+		"gml_geometries"	"the_geom"
+		"ows_onlineresource"	""
+		"gml_featureid"	"gc_objid"
+		"ows_include_items"	"id,titolo_progetto_po,anno_bando,url"
+		"gml_include_items"	"id,titolo_progetto_po,anno_bando,url"
+		"gml_the_geom_type"	"line"
+		"gml_id_type"	"Character"
+		"gml_titolo_progetto_po_type"	"Character"
+		"gml_anno_bando_type"	"Character"
+		"gml_url_type"	"Character"
+	
+	END
+	PROJECTION
+		"init=epsg:4326"
+	END
+	CONNECTIONTYPE POSTGIS
+	CONNECTION "user=mapserver password=mapserver dbname=ubigreen host=127.0.0.1 port=5433"
+	DATA "gc_geom FROM (SELECT __data__.gid as gc_objid,__data__.the_geom as gc_geom, __data__.id,__data__.titolo_progetto_po,__data__.anno_bando,__data__.url FROM plone_data.projects_geometries AS __data__ ) AS foo USING UNIQUE gc_objid USING SRID=4326"
+	FILTER "geometrytype(gc_geom)='LINESTRING'"
+	PROCESSING "CLOSE_CONNECTION=DEFER"
+	DUMP TRUE
+	SIZEUNITS pixels
+	CLASS
+		NAME "cls_geom_plg"
+		TITLE "elementi lineari"
+		STYLE
+			COLOR 0 0 255
+			WIDTH 3
+			MINWIDTH 3
+		END
+	END
+	END
+LAYER
+	GROUP "grp_plone_data"
+	NAME "grp_plone_data.lay_plone_data_p"
+	TYPE POINT
+	STATUS OFF
+	METADATA
+		"wms_group_title" ""
+		"ows_title"	"Elementi geometrici (puntuali)"
+		"wms_title"	"Elementi geometrici (puntuali)"
+		"gml_geometries"	"the_geom"
+		"ows_onlineresource"	""
+		"gml_featureid"	"gc_objid"
+		"ows_include_items"	"id,titolo_progetto_po,anno_bando,url"
+		"gml_include_items"	"id,titolo_progetto_po,anno_bando,url"
+		"gml_the_geom_type"	"Point"
+		"gml_id_type"	"Character"
+		"gml_titolo_progetto_po_type"	"Character"
+		"gml_anno_bando_type"	"Character"
+		"gml_url_type"	"Character"
+	
+	END
+	PROJECTION
+		"init=epsg:4326"
+	END
+	CONNECTIONTYPE POSTGIS
+	CONNECTION "user=mapserver password=mapserver dbname=ubigreen host=127.0.0.1 port=5433"
+	DATA "gc_geom FROM (SELECT __data__.gid as gc_objid,__data__.the_geom as gc_geom, __data__.id,__data__.titolo_progetto_po,__data__.anno_bando,__data__.url FROM plone_data.projects_geometries AS __data__ ) AS foo USING UNIQUE gc_objid USING SRID=4326"
+	FILTER "geometrytype(gc_geom)='POINT'"
+	PROCESSING "CLOSE_CONNECTION=DEFER"
+	DUMP TRUE
+	SIZEUNITS pixels
+	CLASS
+		NAME "cls_geom_plg"
+		TITLE "elementi puntuali"
+		STYLE
+			COLOR 255 0 0
+			SYMBOL "MARKER-RED"
+			SIZE 20
+			MINSIZE 15
+			MAXSIZE 20
+			WIDTH 1
+		END
+	END
+	END
+###### SYMBOLS #######
+SYMBOL
+	NAME "MARKER-RED"
+	TYPE PIXMAP
+	IMAGE "../../symbols/marker32_red.png"
+ANCHORPOINT 0.5 1
+END
+LEGEND
+    STATUS ON
+    OUTLINECOLOR 0 0 0 
+    KEYSIZE 36 24
+    LABEL
+       TYPE TRUETYPE
+       FONT 'arial'
+       SIZE 8
+       COLOR 0 0 0
+    END
+END
+
+OUTPUTFORMAT	
+	NAME "AGG PNG 8 bit"
+	DRIVER "AGG/PNG"
+	MIMETYPE "image/png"
+	IMAGEMODE RGB
+	EXTENSION "png"
+	FORMATOPTION "INTERLACE=OFF"
+    FORMATOPTION "QUANTIZE_FORCE=ON"
+    FORMATOPTION "QUANTIZE_DITHER=OFF"
+    FORMATOPTION "QUANTIZE_COLORS=256"
+END
+OUTPUTFORMAT	
+	NAME "AGG PNG"
+	DRIVER "AGG/PNG"
+	MIMETYPE "image/png"
+	IMAGEMODE RGBA
+	EXTENSION "png"
+	FORMATOPTION "INTERLACE=OFF"
+END
+
+END #MAP
