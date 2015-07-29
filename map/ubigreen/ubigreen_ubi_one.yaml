@@ -133,7 +133,7 @@ grids:
 caches:
  ubigreen_ubi_one_cache:
   sources:
-   - mapserver_source:grp_monum_nat,grp_riserve,grp_parchi_reg,grp_parc_nat,grp_parchi_loc,grp_sic,grp_zps
+   - mapserver_source:grp_monum_nat,grp_parchi_reg,grp_parchi_loc,grp_parc_nat,grp_riserve,grp_sic,grp_zps
   minimize_meta_requests: true
   cache:
    type: mbtiles

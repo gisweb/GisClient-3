@@ -18,7 +18,7 @@ define('CHAR_SET',$charSet);
 define('DB_USER',$dbUser); //Superutente;
 define('DB_PWD',$dbPwd);
 define('DB_HOST','127.0.0.1');
-define('DB_PORT','5433');
+define('DB_PORT','5432');
 define('PRINT_SERVICE_PWD','printservice$');
 
 

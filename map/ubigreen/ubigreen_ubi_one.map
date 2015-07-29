@@ -151,6 +151,47 @@ LAYER
 	END
 	END
 LAYER
+	GROUP "grp_monum_nat"
+	NAME "grp_monum_nat.lay_monum_nat_p"
+	TYPE POINT
+	STATUS OFF
+	METADATA
+		"wms_group_title" ""
+		"ows_title"	"Monumenti naturali (punti)"
+		"wms_title"	"Monumenti naturali (punti)"
+		"gml_geometries"	"geom"
+		"ows_onlineresource"	""
+		"gml_featureid"	"gc_objid"
+		"ows_include_items"	"note_mn"
+		"gml_include_items"	"note_mn"
+		"gml_geom_type"	"point"
+		"gml_note_mn_type"	"Character"
+	
+	END
+	PROJECTION
+		"init=epsg:32632"
+	END
+	CONNECTIONTYPE POSTGIS
+	CONNECTION "user=mapserver password=mapserver dbname=ubigreen host=127.0.0.1 port=5433"
+	DATA "gc_geom FROM (SELECT __data__.gid as gc_objid,__data__.geom as gc_geom, __data__.note_mn FROM aree_protette.monum_nat_p AS __data__ ) AS foo USING UNIQUE gc_objid USING SRID=32632"
+	PROCESSING "CLOSE_CONNECTION=DEFER"
+	DUMP TRUE
+	EXTENT 467781.6572 5054022.48169946 616886.715500068 5086505.23459946
+	SIZEUNITS pixels
+	OPACITY 100
+	CLASS
+		NAME "cls_monum_nat_p"
+		TITLE "Monumenti naturali (punti)"
+		STYLE
+			COLOR 128 0 0
+			SIZE 8
+			MINSIZE 5
+			MAXSIZE 12
+			WIDTH 1
+		END
+	END
+	END
+LAYER
 	GROUP "grp_varchi"
 	NAME "grp_varchi.lay_varchi"
 	TYPE LINE
@@ -204,97 +245,6 @@ LAYER
 	END
 	END
 LAYER
-	GROUP "grp_monum_nat"
-	NAME "grp_monum_nat.lay_monum_nat_p"
-	TYPE POINT
-	STATUS OFF
-	METADATA
-		"wms_group_title" ""
-		"ows_title"	"Monumenti naturali (punti)"
-		"wms_title"	"Monumenti naturali (punti)"
-		"gml_geometries"	"geom"
-		"ows_onlineresource"	""
-		"gml_featureid"	"gc_objid"
-		"ows_include_items"	"note_mn"
-		"gml_include_items"	"note_mn"
-		"gml_geom_type"	"point"
-		"gml_note_mn_type"	"Character"
-	
-	END
-	PROJECTION
-		"init=epsg:32632"
-	END
-	CONNECTIONTYPE POSTGIS
-	CONNECTION "user=mapserver password=mapserver dbname=ubigreen host=127.0.0.1 port=5433"
-	DATA "gc_geom FROM (SELECT __data__.gid as gc_objid,__data__.geom as gc_geom, __data__.note_mn FROM aree_protette.monum_nat_p AS __data__ ) AS foo USING UNIQUE gc_objid USING SRID=32632"
-	PROCESSING "CLOSE_CONNECTION=DEFER"
-	DUMP TRUE
-	EXTENT 467781.6572 5054022.48169946 616886.715500068 5086505.23459946
-	SIZEUNITS pixels
-	OPACITY 100
-	CLASS
-		NAME "cls_monum_nat_p"
-		TITLE "Monumenti naturali (punti)"
-		STYLE
-			COLOR 128 0 0
-			SIZE 8
-			MINSIZE 5
-			MAXSIZE 12
-			WIDTH 1
-		END
-	END
-	END
-LAYER
-	GROUP "grp_riserve"
-	NAME "grp_riserve.lay_riserve"
-	TYPE POLYGON
-	STATUS OFF
-	METADATA
-		"wms_group_title" ""
-		"ows_title"	"Riserve naturali"
-		"wms_title"	"Riserve naturali"
-		"gml_geometries"	"geom"
-		"ows_onlineresource"	""
-		"gml_featureid"	"gc_objid"
-		"ows_include_items"	"nome_ente"
-		"gml_include_items"	"nome_ente"
-		"gml_geom_type"	"multipolygon"
-		"gml_nome_ente_type"	"Character"
-	
-	END
-	PROJECTION
-		"init=epsg:32632"
-	END
-	CONNECTIONTYPE POSTGIS
-	CONNECTION "user=mapserver password=mapserver dbname=ubigreen host=127.0.0.1 port=5433"
-	DATA "gc_geom FROM (SELECT __data__.gid as gc_objid,__data__.geom as gc_geom, __data__.nome_ente FROM aree_protette.riserve_nat AS __data__ ) AS foo USING UNIQUE gc_objid USING SRID=32632"
-	PROCESSING "CLOSE_CONNECTION=DEFER"
-	DUMP TRUE
-	EXTENT 462658.5427 4961089.27519946 677477.799900588 5148405.64129945
-	SIZEUNITS pixels
-	MAXSCALEDENOM 10000000
-	MINSCALEDENOM 1
-	OPACITY 100
-	CLASS
-		NAME "cls_riserve"
-		TITLE "Riserve naturali"
-		STYLE
-			OUTLINECOLOR 128 0 0
-			WIDTH 1
-		END
-		STYLE
-			COLOR 128 0 0
-			SYMBOL "4_QUADRATI"
-			OUTLINECOLOR 128 0 0
-			SIZE 8
-			MINSIZE 8
-			MAXSIZE 8
-			WIDTH 1
-			MINWIDTH 1
-		END
-	END
-	END
-LAYER
 	GROUP "grp_parchi_reg"
 	NAME "grp_parchi_reg.lay_parchi_reg"
 	TYPE POLYGON
@@ -339,6 +289,57 @@ LAYER
 			SIZE 6
 			MINSIZE 6
 			MAXSIZE 6
+			ANGLE 135
+			WIDTH 1
+			MINWIDTH 1
+		END
+	END
+	END
+LAYER
+	GROUP "grp_parchi_loc"
+	NAME "grp_parchi_loc.lay_parchi_loc"
+	TYPE POLYGON
+	STATUS OFF
+	METADATA
+		"wms_group_title" ""
+		"ows_title"	"perimetro parco"
+		"wms_title"	"perimetro parco"
+		"gml_geometries"	"geom"
+		"ows_onlineresource"	""
+		"gml_featureid"	"gc_objid"
+		"ows_include_items"	"nome_plis"
+		"gml_include_items"	"nome_plis"
+		"gml_geom_type"	"multipolygon"
+		"gml_nome_plis_type"	"Character"
+	
+	END
+	PROJECTION
+		"init=epsg:32632"
+	END
+	CONNECTIONTYPE POSTGIS
+	CONNECTION "user=mapserver password=mapserver dbname=ubigreen host=127.0.0.1 port=5433"
+	DATA "gc_geom FROM (SELECT __data__.gid as gc_objid,__data__.geom as gc_geom, __data__.nome_plis FROM aree_protette.parchi_local AS __data__ ) AS foo USING UNIQUE gc_objid USING SRID=32632"
+	PROCESSING "CLOSE_CONNECTION=DEFER"
+	DUMP TRUE
+	EXTENT 465285.8937 4968286.79979946 683285.039600695 5127846.41639946
+	SIZEUNITS pixels
+	MAXSCALEDENOM 10000000
+	MINSCALEDENOM 1
+	OPACITY 100
+	CLASS
+		NAME "cls_perimetro_parchi_loc"
+		TITLE "perimetro parchi locali"
+		STYLE
+			OUTLINECOLOR 64 255 255
+			WIDTH 1
+		END
+		STYLE
+			COLOR 64 255 255
+			SYMBOL "PAT_/"
+			OUTLINECOLOR 64 255 255
+			SIZE 4
+			MINSIZE 4
+			MAXSIZE 4
 			ANGLE 135
 			WIDTH 1
 			MINWIDTH 1
@@ -396,21 +397,21 @@ LAYER
 	END
 	END
 LAYER
-	GROUP "grp_parchi_loc"
-	NAME "grp_parchi_loc.lay_parchi_loc"
+	GROUP "grp_riserve"
+	NAME "grp_riserve.lay_riserve"
 	TYPE POLYGON
 	STATUS OFF
 	METADATA
 		"wms_group_title" ""
-		"ows_title"	"perimetro parco"
-		"wms_title"	"perimetro parco"
+		"ows_title"	"Riserve naturali"
+		"wms_title"	"Riserve naturali"
 		"gml_geometries"	"geom"
 		"ows_onlineresource"	""
 		"gml_featureid"	"gc_objid"
-		"ows_include_items"	"nome_plis"
-		"gml_include_items"	"nome_plis"
+		"ows_include_items"	"nome_ente"
+		"gml_include_items"	"nome_ente"
 		"gml_geom_type"	"multipolygon"
-		"gml_nome_plis_type"	"Character"
+		"gml_nome_ente_type"	"Character"
 	
 	END
 	PROJECTION
@@ -418,29 +419,28 @@ LAYER
 	END
 	CONNECTIONTYPE POSTGIS
 	CONNECTION "user=mapserver password=mapserver dbname=ubigreen host=127.0.0.1 port=5433"
-	DATA "gc_geom FROM (SELECT __data__.gid as gc_objid,__data__.geom as gc_geom, __data__.nome_plis FROM aree_protette.parchi_local AS __data__ ) AS foo USING UNIQUE gc_objid USING SRID=32632"
+	DATA "gc_geom FROM (SELECT __data__.gid as gc_objid,__data__.geom as gc_geom, __data__.nome_ente FROM aree_protette.riserve_nat AS __data__ ) AS foo USING UNIQUE gc_objid USING SRID=32632"
 	PROCESSING "CLOSE_CONNECTION=DEFER"
 	DUMP TRUE
-	EXTENT 465285.8937 4968286.79979946 683285.039600695 5127846.41639946
+	EXTENT 462658.5427 4961089.27519946 677477.799900588 5148405.64129945
 	SIZEUNITS pixels
 	MAXSCALEDENOM 10000000
 	MINSCALEDENOM 1
 	OPACITY 100
 	CLASS
-		NAME "cls_perimetro_parchi_loc"
-		TITLE "perimetro parchi locali"
+		NAME "cls_riserve"
+		TITLE "Riserve naturali"
 		STYLE
-			OUTLINECOLOR 64 255 255
+			OUTLINECOLOR 128 0 0
 			WIDTH 1
 		END
 		STYLE
-			COLOR 64 255 255
-			SYMBOL "PAT_/"
-			OUTLINECOLOR 64 255 255
-			SIZE 4
-			MINSIZE 4
-			MAXSIZE 4
-			ANGLE 135
+			COLOR 128 0 0
+			SYMBOL "4_QUADRATI"
+			OUTLINECOLOR 128 0 0
+			SIZE 8
+			MINSIZE 8
+			MAXSIZE 8
 			WIDTH 1
 			MINWIDTH 1
 		END
